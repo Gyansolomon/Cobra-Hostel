@@ -211,3 +211,15 @@
   color: var(--primary);
   font-variant-numeric: tabular-nums;
 }
+
+.hostel-details-page .font-extrabold {
+  font-weight: 600;
+}
+
+.hostel-details-page .font-bold {
+  font-weight: 540;
+}
+
+.hostel-details-page .font-semibold {
+  font-weight: 500;
+}
