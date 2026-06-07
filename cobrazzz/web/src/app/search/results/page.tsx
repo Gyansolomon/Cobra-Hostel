@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 
 import { MobileMapSheet } from "@/components/mobile-map-sheet";
+import { MobileMenuButton } from "@/components/mobile-menu-overlay";
 import { PremiumAssetIcon, premiumAssets } from "@/components/premium-asset-icon";
 import { SearchFilterControls } from "@/components/search-filter-controls";
 
@@ -242,13 +243,11 @@ function SearchHeader({ query }: { query: string }) {
           </label>
         </form>
 
-        <button
-          type="button"
+        <MobileMenuButton
           className="grid size-7 shrink-0 place-items-center rounded-full text-[#101522]"
-          aria-label="Open menu"
         >
           <Menu className="size-5" aria-hidden="true" strokeWidth={2} />
-        </button>
+        </MobileMenuButton>
       </div>
 
       <div className="hidden h-[6.5rem] grid-cols-[1fr_auto_1fr] items-center px-10 lg:grid 2xl:px-14">
@@ -307,13 +306,11 @@ function SearchHeader({ query }: { query: string }) {
           >
             <Globe2 className="size-5" aria-hidden="true" />
           </button>
-          <button
-            type="button"
+          <MobileMenuButton
             className="grid size-11 place-items-center rounded-full bg-secondary text-[#1F2329]"
-            aria-label="Open menu"
           >
             <Menu className="size-5" aria-hidden="true" />
-          </button>
+          </MobileMenuButton>
         </div>
       </div>
 
@@ -570,9 +567,9 @@ function MobilePrimaryNav() {
     >
       <ul className="mx-auto grid w-full max-w-44 grid-cols-3 text-[11px] font-semibold text-muted-foreground">
         {[
-          { label: "Explore", icon: Discover, active: true },
-          { label: "Wishlist", icon: Heart },
-          { label: "Profile", icon: Profile },
+          { label: "Explore", icon: Discover, href: "/", active: true },
+          { label: "Wishlist", icon: Heart, href: "/wishlist" },
+          { label: "Profile", icon: Profile, href: "#" },
         ].map((item) => {
           const Icon = item.icon;
 
@@ -582,7 +579,7 @@ function MobilePrimaryNav() {
                   className={`flex flex-col items-center gap-0.5 rounded-2xl px-2 py-1 ${
                   item.active ? "text-primary" : ""
                 }`}
-                href="#"
+                href={item.href}
               >
                 <Icon size={21} color="currentColor" variant="Linear" />
                 <span>{item.label}</span>

@@ -1828,7 +1828,7 @@ function PropertyCardCarousel({ properties }: { properties: MiniProperty[] }) {
 
 function MiniPropertyCard({ property }: { property: MiniProperty }) {
   return (
-    <article className="w-[76%] shrink-0 overflow-hidden rounded-xl border border-border bg-white sm:w-72">
+    <article className="w-[calc(100%-0.5rem)] shrink-0 overflow-hidden rounded-xl border border-border bg-white sm:w-72">
       <div className="relative aspect-[1.18] bg-secondary">
         <Image src={property.image} alt={`${property.name} room preview`} fill sizes="18rem" className="object-cover" />
         {property.badge ? (
@@ -1836,8 +1836,8 @@ function MiniPropertyCard({ property }: { property: MiniProperty }) {
             {property.badge}
           </span>
         ) : null}
-        <button type="button" className="absolute right-3 top-3 grid size-10 place-items-center rounded-full bg-white shadow-sm" aria-label={`Save ${property.name}`}>
-          <Heart className="size-5" aria-hidden="true" />
+        <button type="button" className="absolute right-2.5 top-2.5 grid size-8 place-items-center rounded-full bg-white shadow-sm" aria-label={`Save ${property.name}`}>
+          <Heart className="size-4" aria-hidden="true" />
         </button>
         <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5" aria-hidden="true">
           <span className="h-1.5 w-6 rounded-full bg-white" />
@@ -2183,14 +2183,17 @@ function HeroIconButton({
   label,
   icon: Icon,
   compact = false,
+  onClick,
 }: {
   label: string;
-  icon: typeof Search;
+  icon: LucideIcon;
   compact?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className={`grid place-items-center rounded-full bg-white text-[#111827] shadow-sm ${
         compact ? "size-8 border border-border shadow-none" : "size-8 lg:size-9"
       }`}

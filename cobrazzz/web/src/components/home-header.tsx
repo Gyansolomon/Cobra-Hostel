@@ -11,7 +11,7 @@ import {
   SearchNormal1,
 } from "iconsax-react";
 
-import { Button } from "@/components/ui/button";
+import { MobileMenuButton } from "@/components/mobile-menu-overlay";
 import { cn } from "@/lib/utils";
 
 const firstScreenCategories = [
@@ -83,14 +83,9 @@ export function HomeHeader() {
           <a className="text-sm font-semibold text-foreground" href="#">
             List your hostel
           </a>
-          <Button
-            variant="secondary"
-            size="icon"
-            className="size-11 rounded-full border border-border"
-            aria-label="Open menu"
-          >
+          <MobileMenuButton className="inline-flex size-11 items-center justify-center rounded-full border border-border bg-secondary text-secondary-foreground">
             <HambergerMenu size={20} color="currentColor" variant="Linear" />
-          </Button>
+          </MobileMenuButton>
         </div>
       </div>
 
@@ -99,12 +94,11 @@ export function HomeHeader() {
           <a className="font-mono text-lg font-semibold" href="#" aria-label="Cobra home">
             cobra
           </a>
-          <button
+          <MobileMenuButton
             className="grid size-8 place-items-center rounded-full text-white"
-            aria-label="Open menu"
           >
             <HambergerMenu size={24} color="currentColor" variant="Linear" />
-          </button>
+          </MobileMenuButton>
         </div>
 
         <Link href="/search" className="mt-4 flex h-12 w-full items-center justify-between gap-3 rounded-full border border-white/40 bg-white py-1 pl-5 pr-1.5 text-left text-foreground shadow-sm active:scale-[0.99]">
@@ -170,12 +164,11 @@ export function HomeHeader() {
             <SearchNormal1 size={17} color="currentColor" variant="Linear" />
           </span>
         </Link>
-        <button
+        <MobileMenuButton
           className="grid size-9 shrink-0 place-items-center rounded-full text-foreground"
-          aria-label="Open menu"
         >
           <HambergerMenu size={23} color="currentColor" variant="Linear" />
-        </button>
+        </MobileMenuButton>
       </div>
 
       <nav
@@ -185,7 +178,7 @@ export function HomeHeader() {
         <ul className="mobile-primary-nav-list mx-auto grid w-full max-w-44 grid-cols-3 text-[11px] font-semibold text-muted-foreground">
           {[
             { label: "Explore", icon: Discover, active: true },
-            { label: "Wishlist", icon: Heart },
+            { label: "Wishlist", icon: Heart, href: "/wishlist" },
             { label: "Profile", icon: Profile },
           ].map((item) => {
             const Icon = item.icon;
@@ -197,7 +190,7 @@ export function HomeHeader() {
                     "flex flex-col items-center gap-0.5 rounded-2xl px-2 py-1",
                     item.active && "text-primary",
                   )}
-                  href="#"
+                  href={item.href ?? "#"}
                 >
                   <Icon size={22} color="currentColor" variant="Linear" />
                   <span>{item.label}</span>

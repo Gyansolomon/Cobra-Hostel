@@ -110,9 +110,9 @@ export default function SearchPage() {
       >
         <ul className="mx-auto grid w-full max-w-48 grid-cols-3 text-xs font-semibold text-muted-foreground">
           {[
-            { label: "Explore", icon: Discover, active: true },
-            { label: "Wishlist", icon: Heart },
-            { label: "Profile", icon: Profile },
+            { label: "Explore", icon: Discover, href: "/", active: true },
+            { label: "Wishlist", icon: Heart, href: "/wishlist" },
+            { label: "Profile", icon: Profile, href: "#" },
           ].map((item) => {
             const Icon = item.icon;
 
@@ -122,7 +122,7 @@ export default function SearchPage() {
                   className={`flex flex-col items-center gap-1 rounded-2xl px-2 py-1.5 ${
                     item.active ? "text-primary" : ""
                   }`}
-                  href="#"
+                  href={item.href}
                 >
                   <Icon size={24} color="currentColor" variant="Linear" />
                   <span>{item.label}</span>
