@@ -1,6 +1,6 @@
 # Session Handoff
 
-Last updated: 2026-06-06
+Last updated: 2026-06-07
 
 This handoff is for the next Codex agent continuing the Cobra / Hostel Premium project.
 
@@ -9,11 +9,11 @@ This handoff is for the next Codex agent continuing the Cobra / Hostel Premium p
 Before planning or implementing, read these files in order:
 
 ```text
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\AGENTS.md
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web\AGENTS.md
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\docs\HOME_SCREEN_LAYOUT_PLAN.md
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\docs\COLOR_SYSTEM.md
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\docs\SESSION_HANDOFF.md
+C:\Users\HP\Desktop\Cobra master\cobrazzz\AGENTS.md
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\AGENTS.md
+C:\Users\HP\Desktop\Cobra master\cobrazzz\docs\HOME_SCREEN_LAYOUT_PLAN.md
+C:\Users\HP\Desktop\Cobra master\cobrazzz\docs\COLOR_SYSTEM.md
+C:\Users\HP\Desktop\Cobra master\cobrazzz\docs\SESSION_HANDOFF.md
 C:\Users\HP\Desktop\Cobra master\premium-app-os\global\SKILL_ROUTER.md
 C:\Users\HP\Desktop\Cobra master\premium-app-os\planning\PAGE_PLANNING_RULES.md
 C:\Users\HP\Desktop\Cobra master\premium-app-os\planning\COMPONENT_AND_TOOL_SELECTION.md
@@ -36,13 +36,13 @@ Do not copy protected brand assets or exact proprietary UI.
 Project:
 
 ```text
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ
+C:\Users\HP\Desktop\Cobra master\cobrazzz
 ```
 
 Web app:
 
 ```text
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web
 ```
 
 Premium planning system:
@@ -52,6 +52,54 @@ C:\Users\HP\Desktop\Cobra master\premium-app-os
 ```
 
 Important: ignore the older OneDrive folder unless the user explicitly redirects there.
+
+Important deployment/path update:
+
+```text
+The tracked project folder was renamed from "Cobra ZZZ" to "cobrazzz" because Vercel failed when serverless function names contained spaces.
+Use C:\Users\HP\Desktop\Cobra master\cobrazzz\web for all future app work.
+The old local C:\Users\HP\Desktop\Cobra master\Cobra ZZZ folder may still exist with local-only build output, node_modules, and ignored/reference assets. Do not work from it.
+```
+
+## GitHub And Vercel State
+
+Repository:
+
+```text
+https://github.com/Gyansolomon/Cobra-Hostel.git
+```
+
+Branch:
+
+```text
+main
+```
+
+Latest pushed commit at handoff time:
+
+```text
+7f880cf Rename app folder for Vercel deploy
+```
+
+Deployment:
+
+```text
+The user reported that the site has been deployed on Vercel.
+Vercel Root Directory must be: cobrazzz/web
+Framework: Next.js
+Build command: npm run build
+Install command: npm install
+```
+
+Local untracked items at handoff time:
+
+```text
+C:\Users\HP\Desktop\Cobra master\Cobra ZZZ
+C:\Users\HP\Desktop\Cobra master\README.local-before-merge.md
+C:\Users\HP\Desktop\Cobra master\premium-app-os
+```
+
+Do not delete local folders unless the user explicitly confirms. If deleting old `Cobra ZZZ`, first make sure no dev server is running from that folder.
 
 ## Product Direction
 
@@ -96,13 +144,13 @@ No cream/gold/purple-gradient/generic SaaS.
 Homepage references:
 
 ```text
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\images reference
+C:\Users\HP\Desktop\Cobra master\cobrazzz\images reference
 ```
 
 Listing/search references:
 
 ```text
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\images reference\listing list
+C:\Users\HP\Desktop\Cobra master\cobrazzz\images reference\listing list
 ```
 
 Listing reference sources are Amber and Airbnb. Analyze the screenshots before implementation. The key shared patterns are:
@@ -123,19 +171,19 @@ Trust/support layer.
 Main edited files:
 
 ```text
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web\src\app\page.tsx
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web\src\components\home-header.tsx
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web\src\components\area-map-client.tsx
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web\src\components\premium-asset-icon.tsx
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web\src\app\globals.css
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\src\app\page.tsx
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\src\components\home-header.tsx
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\src\components\area-map-client.tsx
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\src\components\premium-asset-icon.tsx
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\src\app\globals.css
 ```
 
 Static assets added:
 
 ```text
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web\public\hero\student-with-luggage.png
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web\public\premium-assets\3dicons\...
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web\public\university-logos\...
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\public\hero\student-with-luggage.png
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\public\premium-assets\3dicons\...
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\public\university-logos\...
 ```
 
 Homepage implemented:
@@ -170,7 +218,7 @@ LocationFilterBar pattern is: first pill is city dropdown, then university/area 
 Current `LocationFilterBar` is in:
 
 ```text
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web\src\app\page.tsx
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\src\app\page.tsx
 ```
 
 Current structure:
@@ -185,7 +233,7 @@ University/area chips: UCC, CCTU, NDU, Science, Ayensu, Kwaprow
 The current `/search` page is still a placeholder/simple search discovery page:
 
 ```text
-C:\Users\HP\Desktop\Cobra master\Cobra ZZZ\web\src\app\search\page.tsx
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\src\app\search\page.tsx
 ```
 
 It currently has:
@@ -199,68 +247,107 @@ Top cities and top universities.
 Mobile bottom nav.
 ```
 
-This is not yet the premium listing/explore page.
+The premium listing work currently lives on `/search/results`.
+
+Current `/search/results` state:
+
+```text
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\src\app\search\results\page.tsx
+```
+
+Implemented:
+
+```text
+Mobile compact sticky header with cobra wordmark/search/menu.
+Horizontal filter pill row.
+Premium listing cards using Amber-style information density.
+Card image carousel indicators, save heart, offer badge, rating on title line.
+Compact feature pills limited to two rows with horizontal overflow.
+Price format uses Ghana currency symbol style, e.g. ¢3,200/year.
+See Availability button links to hostel details page.
+Desktop listing mode has left results column and right map/trust panel.
+Floating Map button exists on mobile listing.
+```
+
+Important listing user preferences:
+
+```text
+Keep listing card typography compact.
+Pills should fit text and stay single-line.
+Do not make pill text wrap into two lines.
+If there are too many pills, use horizontal scrolling.
+Rating belongs on the same line as the title, right aligned, black text.
+Use currency symbol amount/year style.
+```
+
+## Current Hostel Details Page State
+
+Main files:
+
+```text
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\src\app\hostels\[slug]\page.tsx
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\src\app\hostels\[slug]\hostel-details-client.tsx
+C:\Users\HP\Desktop\Cobra master\cobrazzz\web\src\lib\hostels.ts
+```
+
+Route currently used for review:
+
+```text
+http://localhost:3000/hostels/science-view-residence
+```
+
+Implemented:
+
+```text
+Mobile-first Amber-inspired details page.
+Hero image gallery area with back/search/share/heart controls.
+Property summary card overlapping hero.
+Summary card has breadcrumb, title, price block, address, distance row, View map action.
+Feature chip panel has three separate horizontal chip rows inside a soft gray lower panel.
+Sticky section tabs: Overview, Offers, Description, Amenities, Room Types, House Rules.
+Offers card with discount pill, coupon divider, offer rows, View All.
+Trust benefits card with icon badges and social proof row.
+About the Property card with collapsed text and Show more.
+Amenities card with bills included group, savings card, shared utilities, fitness/recreation, View all amenities.
+Room Types section with filters, category tabs, room cards, tenancy rows, Book buttons.
+StickyBookingBar is context-aware: before Room Types it shows Support + See Availability + Enquire Now; at Room Types it shows Support + Enquire Now only.
+Floating support widget exists above bottom CTA.
+```
+
+Details page user preferences:
+
+```text
+Sizing is the biggest concern: all new components and text must use compact Cobra sizing, not oversized Amber sizing.
+Use white rounded cards on soft light-gray page background.
+Brand pink only for active tabs, links, primary actions, and outlines.
+Dark text for titles; muted gray for secondary text.
+Pale pink for icon backgrounds; pale green for savings/discount areas.
+Feature chips must be three independent horizontal rows, not flex-wrap.
+Hide horizontal scrollbars visually while keeping swipe scrolling.
+Do not bring back the Overview stats card that was removed.
+Do not let the floating support widget cover important content or bottom CTA.
+```
 
 ## Next Implementation Target
 
-The next agent should start implementing the premium listing/explore page for `/search`, but should keep the implementation incremental and reference-driven.
+The next agent should continue from the deployed MVP state, not restart `/search`.
 
-Recommended first implementation slice:
-
-```text
-Replace /search placeholder with premium listing shell.
-Do not build advanced filter modal first.
-Do not overbuild.
-```
-
-Build Phase 1:
+Likely next work:
 
 ```text
-Sticky search header.
-Horizontal filter pill row.
-Result heading:
-  "Hostels near UCC"
-  "Showing 42 verified rooms around Cape Coast"
-Mobile listing cards.
-Desktop listing column + sticky map/right rail.
-Floating map button on mobile.
+Continue polishing the hostel details page.
+Finish Room Types / House Rules / Meet the Host sections if the user asks.
+Wire enquiry/support flows after the visual MVP is stable.
+Keep checking mobile sizing, spacing, and overflow in the in-app browser.
 ```
 
-Build Phase 2:
+If the user asks for deployment help:
 
 ```text
-Premium listing cards:
-image
-save heart
-verified/reviewed label
-"2 in a room · Science / New Site"
-distance from UCC
-price per semester
-3D rating star + rating
-small tags: Bills included, Manager confirmed, Private washroom
+Use Vercel Root Directory: cobrazzz/web
+Do not use the old spaced path: Cobra ZZZ/web
+If a Vercel build fails, inspect the build log first.
 ```
-
-Build Phase 3:
-
-```text
-Filter system:
-mobile Sheet
-desktop Dialog
-Tabs / Checkbox / Slider / Select from existing UI primitives
-filters: university, area, price, room type, amenities, bills, availability
-```
-
-Build Phase 4:
-
-```text
-Trust/support rail:
-map preview
-verified properties
-manager confirmation
-student support
-review count
-```
-
 ## Listing Page Verdict From Reference Audit
 
 Use a hybrid of Airbnb and Amber:
@@ -302,6 +389,20 @@ npm run build
 
 Run both again after any implementation.
 
+Most recent verified build command:
+
+```text
+cd C:\Users\HP\Desktop\Cobra master\cobrazzz\web
+npm install
+npm run build
+```
+
+Result:
+
+```text
+Build passed on 2026-06-07 after the folder rename to cobrazzz.
+```
+
 ## Cautions For Next Agent
 
 ```text
@@ -312,11 +413,13 @@ Do not add 3D icons everywhere.
 Do not scrape unDraw assets automatically.
 Do not use expensive paid map APIs without discussing cost.
 Do not start from the OneDrive folder.
+Do not start from the old local "Cobra ZZZ" folder.
 Do not ignore the user's browser comments; they are the current visual source of truth.
 ```
 
 ## Suggested First Message From New Agent
 
 ```text
-I read SESSION_HANDOFF.md and the required project docs. I will start the /search listing implementation with the base listing shell only: sticky search, filter row, result title, listing cards, and desktop map/right rail. I will keep modals and advanced filters for the next pass.
+I read SESSION_HANDOFF.md and the required project docs. I see the app is now deployed from main with Vercel Root Directory cobrazzz/web. I will continue from the current details/listing MVP, use the in-app browser as visual truth, and keep new UI compact with the established Cobra sizing.
 ```
+
