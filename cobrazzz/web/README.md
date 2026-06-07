@@ -53,7 +53,7 @@ npm run build
 If deploying from the parent repository, set Vercel's root directory to:
 
 ```bash
-Cobra ZZZ/web
+cobrazzz/web
 ```
 
 Build command:
