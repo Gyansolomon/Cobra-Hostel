@@ -15,9 +15,9 @@ import { MobileMenuButton } from "@/components/mobile-menu-overlay";
 import { cn } from "@/lib/utils";
 
 const firstScreenCategories = [
-  { label: "Hostels", icon: House2, active: true },
-  { label: "Areas", icon: Buildings },
-  { label: "Map", icon: Map1 },
+  { label: "Hostels", icon: House2, href: "/search/results?q=UCC", active: true },
+  { label: "Areas", icon: Buildings, href: "/map?q=UCC" },
+  { label: "Map", icon: Map1, href: "/map?q=UCC" },
 ];
 
 export function HomeHeader() {
@@ -28,12 +28,12 @@ export function HomeHeader() {
       )}
     >
       <div className="hidden h-20 w-full grid-cols-[1fr_auto_1fr] items-center px-10 lg:grid 2xl:px-14">
-        <a className="flex items-center gap-3" href="#" aria-label="Hostel Premium home">
+        <Link className="flex items-center gap-3" href="/" aria-label="Hostel Premium home">
           <span className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
             <House2 size={23} color="currentColor" variant="Bold" />
           </span>
           <span className="text-xl font-semibold">Hostel Premium</span>
-        </a>
+        </Link>
 
         <div className="relative grid place-items-center">
           <nav
@@ -51,7 +51,7 @@ export function HomeHeader() {
                         "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
                         category.active && "bg-secondary text-foreground",
                       )}
-                      href="#"
+                      href={category.href}
                     >
                       <Icon size={18} color="currentColor" variant="Linear" />
                       {category.label}
@@ -80,7 +80,7 @@ export function HomeHeader() {
         </div>
 
         <div className="flex items-center justify-end gap-3">
-          <a className="text-sm font-semibold text-foreground" href="#">
+          <a className="text-sm font-semibold text-foreground" href="/search/results?q=managers">
             List your hostel
           </a>
           <MobileMenuButton className="inline-flex size-11 items-center justify-center rounded-full border border-border bg-secondary text-secondary-foreground">
@@ -91,9 +91,9 @@ export function HomeHeader() {
 
       <div className="relative overflow-hidden bg-[#f73563] px-5 pb-7 pt-4 text-white lg:hidden">
         <div className="flex items-center justify-between gap-4">
-          <a className="font-mono text-lg font-semibold" href="#" aria-label="Cobra home">
+          <Link className="font-mono text-lg font-semibold" href="/" aria-label="Cobra home">
             cobra
-          </a>
+          </Link>
           <MobileMenuButton
             className="grid size-8 place-items-center rounded-full text-white"
           >
@@ -179,7 +179,7 @@ export function HomeHeader() {
           {[
             { label: "Explore", icon: Discover, active: true },
             { label: "Wishlist", icon: Heart, href: "/wishlist" },
-            { label: "Profile", icon: Profile },
+            { label: "Profile", icon: Profile, href: "/wishlist" },
           ].map((item) => {
             const Icon = item.icon;
 

@@ -166,6 +166,15 @@ Serious filter modal/sheet.
 Trust/support layer.
 ```
 
+Illustration source:
+
+```text
+Use https://undraw.co/ as the current free illustration source for empty states and simple editorial illustrations.
+Prefer downloaded/local SVG assets from unDraw over hand-built CSS illustrations.
+Premium illustration sources can be added later when the user provides/approves them.
+Current unDraw asset in app: cobrazzz/web/public/illustrations/undraw-house-searching.svg
+```
+
 ## Current Homepage State
 
 Main edited files:

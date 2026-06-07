@@ -24,24 +24,24 @@ const topUniversities = [
 
 export default function SearchPage() {
   return (
-    <main className="min-h-dvh bg-background pb-20 text-foreground">
+    <main className="min-h-dvh bg-[#F7F7F7] pb-20 text-foreground lg:pb-0">
       <header className="sticky top-0 z-20 border-b border-border bg-card">
         <form
           action="/search/results"
-          className="flex items-center gap-2.5 px-3 py-2.5"
+          className="mx-auto flex max-w-[72rem] items-center gap-2.5 px-3 py-2.5 lg:h-20 lg:px-8"
         >
           <Link
             href="/"
-            className="grid size-8 shrink-0 place-items-center rounded-full text-foreground"
+            className="grid size-8 shrink-0 place-items-center rounded-full text-foreground lg:size-10"
             aria-label="Back to home"
           >
             <ArrowLeft2 size={21} color="currentColor" variant="Linear" />
           </Link>
 
-          <label className="flex h-11 min-w-0 flex-1 items-center gap-2.5 rounded-full border border-border bg-background px-3.5 text-muted-foreground">
+          <label className="mx-auto flex h-11 min-w-0 flex-1 items-center gap-2.5 rounded-full border border-border bg-background px-3.5 text-muted-foreground lg:h-12 lg:max-w-[42rem] lg:px-5">
             <SearchNormal1 size={19} color="currentColor" variant="Linear" />
             <input
-              className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground lg:text-base"
               name="q"
               placeholder="Search by city, university, or hostel"
               aria-label="Search by city, university, or hostel"
@@ -50,14 +50,14 @@ export default function SearchPage() {
 
           <button
             type="submit"
-            className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground active:scale-[0.97]"
+            className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground active:scale-[0.97] lg:size-12"
             aria-label="Search"
           >
             <SearchNormal1 size={19} color="currentColor" variant="Linear" />
           </button>
         </form>
 
-        <nav className="grid grid-flow-col auto-cols-max gap-5 overflow-x-auto px-4 pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <nav className="mx-auto grid max-w-[72rem] grid-flow-col auto-cols-max gap-5 overflow-x-auto px-4 pb-0 [scrollbar-width:none] lg:px-8 [&::-webkit-scrollbar]:hidden">
           {filters.map((filter, index) => (
             <a
               key={filter}
@@ -74,35 +74,39 @@ export default function SearchPage() {
         </nav>
       </header>
 
-      <section className="border-b border-border bg-card px-4 py-5">
-        <div className="flex items-center gap-2.5 text-muted-foreground">
-          <Timer1 size={21} color="currentColor" variant="Linear" />
-          <h2 className="text-base font-semibold text-foreground">Recently searched</h2>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2.5">
-          {recentSearches.map((item) => (
-            <Link
-              key={item}
-              href={`/search/results?q=${encodeURIComponent(item)}`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-1.5 text-xs font-semibold text-muted-foreground"
-            >
-              <Timer1 size={16} color="currentColor" variant="Linear" />
-              {item}
-            </Link>
-          ))}
-        </div>
-      </section>
+      <div className="mx-auto grid max-w-[72rem] gap-4 px-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:px-8 lg:py-8">
+        <section className="border-b border-border bg-card px-4 py-5 lg:rounded-2xl lg:border lg:p-6 lg:shadow-sm">
+          <div className="flex items-center gap-2.5 text-muted-foreground">
+            <Timer1 size={21} color="currentColor" variant="Linear" />
+            <h2 className="text-base font-semibold text-foreground lg:text-lg">Recently searched</h2>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2.5">
+            {recentSearches.map((item) => (
+              <Link
+                key={item}
+                href={`/search/results?q=${encodeURIComponent(item)}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-1.5 text-xs font-semibold text-muted-foreground lg:px-4 lg:py-2 lg:text-sm"
+              >
+                <Timer1 size={16} color="currentColor" variant="Linear" />
+                {item}
+              </Link>
+            ))}
+          </div>
+        </section>
 
-      <SearchChipSection
-        icon={Location}
-        title="Top cities"
-        items={topCities}
-      />
-      <SearchChipSection
-        icon={Teacher}
-        title="Top universities"
-        items={topUniversities}
-      />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <SearchChipSection
+            icon={Location}
+            title="Top cities"
+            items={topCities}
+          />
+          <SearchChipSection
+            icon={Teacher}
+            title="Top universities"
+            items={topUniversities}
+          />
+        </div>
+      </div>
 
       <nav
         className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-sm lg:hidden"
@@ -146,10 +150,10 @@ function SearchChipSection({
   items: string[];
 }) {
   return (
-    <section className="border-b border-border bg-card px-4 py-5">
+    <section className="border-b border-border bg-card px-4 py-5 lg:rounded-2xl lg:border lg:p-6 lg:shadow-sm">
       <div className="flex items-center gap-2.5">
         <Icon size={20} color="currentColor" variant="Linear" />
-        <h2 className="text-base font-semibold">{title}</h2>
+        <h2 className="text-base font-semibold lg:text-lg">{title}</h2>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2.5">
@@ -157,7 +161,7 @@ function SearchChipSection({
           <Link
             key={item}
             href={`/search/results?q=${encodeURIComponent(item)}`}
-            className="rounded-full border border-border bg-background px-3.5 py-1.5 text-xs font-semibold text-muted-foreground"
+            className="rounded-full border border-border bg-background px-3.5 py-1.5 text-xs font-semibold text-muted-foreground lg:px-4 lg:py-2 lg:text-sm"
           >
             {item}
           </Link>

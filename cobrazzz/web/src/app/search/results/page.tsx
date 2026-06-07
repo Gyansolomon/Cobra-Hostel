@@ -25,6 +25,7 @@ import {
 import { MobileMapSheet } from "@/components/mobile-map-sheet";
 import { MobileMenuButton } from "@/components/mobile-menu-overlay";
 import { PremiumAssetIcon, premiumAssets } from "@/components/premium-asset-icon";
+import { ListingSaveButton } from "@/components/listing-save-button";
 import { SearchFilterControls } from "@/components/search-filter-controls";
 
 const filterPills = [
@@ -38,6 +39,10 @@ const filterPills = [
 
 function getHostelHref(name: string) {
   return `/hostels/${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
+}
+
+function getHostelSlug(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 const hostels = [
@@ -296,7 +301,7 @@ function SearchHeader({ query }: { query: string }) {
         </form>
 
         <div className="flex items-center justify-end gap-3">
-          <a className="text-sm font-semibold text-[#1F2329]" href="#">
+          <a className="text-sm font-semibold text-[#1F2329]" href="/search/results?q=managers">
             List your hostel
           </a>
           <button
@@ -349,37 +354,33 @@ function HostelListingCard({
 
   return (
     <article className="group overflow-hidden rounded-[0.95rem] border border-[#E5E7EB] bg-card shadow-sm sm:grid sm:grid-cols-[15rem_minmax(0,1fr)] sm:gap-4 sm:overflow-visible sm:rounded-none sm:border-x-0 sm:border-b sm:border-t-0 sm:pb-5 sm:shadow-none lg:grid-cols-[16rem_minmax(0,1fr)]">
-      <Link
-        href={detailsHref}
-        className="relative block aspect-[1.55/1] overflow-hidden rounded-t-[0.95rem] bg-secondary sm:aspect-[1.08/1] sm:rounded-[1.1rem]"
-        aria-label={`View details for ${hostel.name}`}
-      >
-        <Image
-          src={hostel.image}
-          alt={`${hostel.room} preview in ${hostel.area}`}
-          fill
-          sizes="(min-width: 1024px) 256px, (min-width: 640px) 240px, calc(100vw - 32px)"
-          className="object-cover transition-transform duration-200 group-hover:scale-[1.02]"
-          priority={priority}
-        />
-        <span className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/55 to-transparent" />
-        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2" aria-hidden="true">
-          <span className="h-1.5 w-8 rounded-full bg-white" />
-          <span className="size-1.5 rounded-full bg-white/80" />
-          <span className="size-1.5 rounded-full bg-white/80" />
-          <span className="size-1.5 rounded-full bg-white/80" />
-        </div>
-        <button
-          type="button"
-          className="absolute right-3 top-3 grid size-8 place-items-center rounded-full bg-white/95 text-[#1F2329] shadow-sm transition-colors hover:bg-white"
-          aria-label={`Save ${hostel.name}`}
+      <div className="relative">
+        <Link
+          href={detailsHref}
+          className="relative block aspect-[1.55/1] overflow-hidden rounded-t-[0.95rem] bg-secondary sm:aspect-[1.08/1] sm:rounded-[1.1rem]"
+          aria-label={`View details for ${hostel.name}`}
         >
-          <Heart size={19} color="currentColor" variant="Linear" />
-        </button>
-        <span className="absolute left-3 top-3 rounded-full bg-[#FFF0F5]/95 px-3 py-1.5 text-[11px] font-medium text-primary shadow-sm sm:px-3 sm:py-1 sm:text-[11px]">
-          {hostel.offer}
-        </span>
-      </Link>
+          <Image
+            src={hostel.image}
+            alt={`${hostel.room} preview in ${hostel.area}`}
+            fill
+            sizes="(min-width: 1024px) 256px, (min-width: 640px) 240px, calc(100vw - 32px)"
+            className="object-cover transition-transform duration-200 group-hover:scale-[1.02]"
+            priority={priority}
+          />
+          <span className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/55 to-transparent" />
+          <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2" aria-hidden="true">
+            <span className="h-1.5 w-8 rounded-full bg-white" />
+            <span className="size-1.5 rounded-full bg-white/80" />
+            <span className="size-1.5 rounded-full bg-white/80" />
+            <span className="size-1.5 rounded-full bg-white/80" />
+          </div>
+          <span className="absolute left-3 top-3 rounded-full bg-[#FFF0F5]/95 px-3 py-1.5 text-[11px] font-medium text-primary shadow-sm sm:px-3 sm:py-1 sm:text-[11px]">
+            {hostel.offer}
+          </span>
+        </Link>
+        <ListingSaveButton slug={getHostelSlug(hostel.name)} name={hostel.name} />
+      </div>
 
       <div className="relative min-w-0 px-4 pb-4 pt-4 sm:px-0 sm:pb-0 sm:pt-0">
         <div className="flex items-start justify-between gap-3">
@@ -485,7 +486,7 @@ function SlidersIcon() {
 
 function MapPreview() {
   return (
-    <section className="overflow-hidden rounded-[1.1rem] border border-border bg-secondary">
+    <Link href="/map?q=UCC" className="block overflow-hidden rounded-[1.1rem] border border-border bg-secondary" aria-label="Open map results near UCC">
       <div className="relative h-[23rem]">
         <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(221,221,221,0.7)_1px,transparent_1px),linear-gradient(rgba(221,221,221,0.72)_1px,transparent_1px)] bg-[size:3rem_3rem]" />
         <div className="absolute inset-x-8 top-14 h-20 rounded-full border border-white/80 bg-white/55 blur-[0.5px]" />
@@ -494,15 +495,13 @@ function MapPreview() {
           UCC
         </div>
         {hostels.map((hostel) => (
-          <button
+          <span
             key={hostel.name}
-            type="button"
             className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground shadow-md transition-colors hover:border-primary hover:text-primary"
             style={hostel.map}
-            aria-label={`${hostel.name} on map`}
           >
             {hostel.price.replace("GHS ", "GHS ")}
-          </button>
+          </span>
         ))}
         <div className="absolute bottom-4 left-4 right-4 rounded-[1rem] border border-border bg-card/95 p-3 shadow-sm">
           <div className="flex items-center gap-2">
@@ -514,7 +513,7 @@ function MapPreview() {
           </p>
         </div>
       </div>
-    </section>
+    </Link>
   );
 }
 

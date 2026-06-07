@@ -180,7 +180,7 @@ export function HostelDetailsClient({ hostel }: { hostel: Hostel }) {
   };
 
   return (
-    <main className="hostel-details-page min-h-dvh overflow-x-hidden bg-[#E9EBEF] pb-28 text-[#111827] lg:bg-background lg:pb-10">
+    <main className="hostel-details-page min-h-dvh overflow-x-hidden bg-[#E9EBEF] pb-28 text-[#111827] lg:bg-[#F7F7F7] lg:pb-10">
       <StickyPropertyHeader hostel={hostel} visible={showStickyHeader} />
       <PropertySectionTabs
         activeTab={activeTab}
@@ -191,7 +191,7 @@ export function HostelDetailsClient({ hostel }: { hostel: Hostel }) {
       />
 
       <PropertyHeroGallery hostel={hostel} images={images} />
-      <div className="mx-auto max-w-[58rem] px-2 lg:max-w-[82rem] lg:px-8">
+      <div className="mx-auto max-w-[58rem] px-2 lg:max-w-[72rem] lg:px-8">
         <PropertySummaryCard hostel={hostel} />
         <section id="offers" className="scroll-mt-28">
           <OffersCard />
@@ -249,12 +249,12 @@ export function HostelDetailsClient({ hostel }: { hostel: Hostel }) {
 
 function PropertyHeroGallery({ hostel, images }: { hostel: Hostel; images: string[] }) {
   return (
-    <section className="relative h-[25.5rem] overflow-hidden bg-secondary sm:h-[32rem] lg:mx-auto lg:mt-5 lg:h-[34rem] lg:max-w-[82rem] lg:rounded-[1.25rem]">
+    <section className="relative h-[25.5rem] overflow-hidden bg-secondary sm:h-[32rem] lg:mx-auto lg:mt-5 lg:h-[34rem] lg:max-w-[72rem] lg:rounded-[1.25rem]">
       <Image
         src={images[0]}
         alt={`${hostel.name} interior room preview`}
         fill
-        sizes="(min-width: 1024px) 1312px, 100vw"
+        sizes="(min-width: 1024px) 1152px, 100vw"
         className="object-cover"
         priority
       />
@@ -2034,7 +2034,7 @@ function StickyPropertyHeader({ hostel, visible }: { hostel: Hostel; visible: bo
         visible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <div className="mx-auto flex h-12 max-w-[58rem] items-center gap-2.5 px-3 lg:max-w-[82rem]">
+      <div className="mx-auto flex h-12 max-w-[58rem] items-center gap-2.5 px-3 lg:max-w-[72rem]">
         <Link href="/search/results?q=UCC" className="grid size-8 place-items-center rounded-full" aria-label="Back to search results">
           <ArrowLeft className="size-4" aria-hidden="true" />
         </Link>
@@ -2066,7 +2066,7 @@ function PropertySectionTabs({
         visible ? "translate-y-0" : "-translate-y-[7rem]"
       }`}
     >
-      <div ref={tabsRef} className="no-scrollbar mx-auto flex max-w-[58rem] overflow-x-auto px-3 lg:max-w-[82rem]">
+      <div ref={tabsRef} className="no-scrollbar mx-auto flex max-w-[58rem] overflow-x-auto px-3 lg:max-w-[72rem]">
         {tabs.map((tab) => (
           <button
             key={tab.id}

@@ -220,6 +220,17 @@ const hostelRows = [
 
 const hostelReviewCounts = [126, 84, 61, 58, 44, 39, 35];
 
+function getHomeHostelHref(hostel: { area: string; name: string }) {
+  const key = `${hostel.area} ${hostel.name}`.toLowerCase();
+
+  if (key.includes("science")) return "/hostels/science-view-residence";
+  if (key.includes("ayensu")) return "/hostels/ayensu-court-rooms";
+  if (key.includes("kwaprow")) return "/hostels/kwaprow-studio-house";
+  if (key.includes("amamoma")) return "/hostels/amamoma-hostel-annex";
+
+  return `/search/results?q=${encodeURIComponent(hostel.area.split(" / ")[0])}`;
+}
+
 export default function Home() {
   return (
     <main className="min-h-dvh bg-[#fff5f8] pb-20 text-foreground lg:bg-background lg:pb-0">
@@ -429,7 +440,7 @@ function MobileStatsAndCities() {
             </p>
           </div>
           <a
-            href="#"
+            href="/search/results?q=Cape%20Coast%20universities"
             className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-neutral-200 text-foreground"
             aria-label="View more universities in Cape Coast"
           >
@@ -441,7 +452,7 @@ function MobileStatsAndCities() {
           {capeCoastUniversities.map((university) => (
             <a
               key={university.initials}
-              href="#"
+              href={`/search/results?q=${encodeURIComponent(university.initials)}`}
               className="group overflow-hidden rounded-[1.35rem] bg-card shadow-sm ring-1 ring-border"
             >
               <div className="relative h-24 overflow-hidden">
@@ -485,7 +496,7 @@ function ContinueSearchJourney() {
         {recentSearches.map((search) => (
           <a
             key={search}
-            href="#"
+            href={`/search/results?q=${encodeURIComponent(search)}`}
             className="shrink-0 rounded-full border border-border bg-transparent px-4 py-2 text-xs font-semibold text-foreground"
           >
             {search}
@@ -511,7 +522,7 @@ function ContinueWhereLeftOff() {
           </p>
         </div>
         <a
-          href="#"
+          href={`/search/results?q=${encodeURIComponent(selectedUniversity)}`}
           className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-neutral-200 text-foreground"
           aria-label="View saved hostel previews"
         >
@@ -523,7 +534,7 @@ function ContinueWhereLeftOff() {
         {savedHostels.map((hostel, index) => (
           <Link
             key={`recent-${hostel.name}-${hostel.area}`}
-            href={`/search/results?q=${encodeURIComponent(hostel.area.split(" / ")[0])}`}
+            href={getHomeHostelHref(hostel)}
             aria-label={`Continue viewing ${hostel.name} in ${hostel.area}`}
           >
             <PropertyCard
@@ -658,7 +669,7 @@ function HostelBrowseRows() {
           <div className="grid grid-flow-col auto-cols-[14.5rem] gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain pb-1 [scrollbar-width:none] sm:auto-cols-[15rem] lg:auto-cols-[15.5rem] lg:gap-3.5 lg:overflow-hidden lg:pb-0 xl:auto-cols-[16rem] [&::-webkit-scrollbar]:hidden">
             {row.hostels.map((hostel, index) => (
               <HostelBrowseCard
-                key={`${row.title}-${hostel.name}`}
+                key={`${row.title}-${hostel.name}-${hostel.area}-${index}`}
                 hostel={hostel}
                 reviews={hostelReviewCounts[index] ?? 48}
               />
@@ -758,7 +769,7 @@ function AreaDiscovery() {
 
         <a
           className="grid size-8 shrink-0 place-items-center rounded-full bg-neutral-200 text-foreground transition-colors hover:bg-neutral-300 lg:hidden"
-          href="#"
+          href={`/map?q=${encodeURIComponent(selectedUniversity)}`}
           aria-label={`See all ${selectedUniversity} hostel areas`}
         >
           <ArrowRight2 size={17} color="currentColor" variant="Linear" />
@@ -766,7 +777,7 @@ function AreaDiscovery() {
 
         <a
           className="hidden rounded-full bg-secondary px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted lg:inline-flex"
-          href="#"
+          href={`/map?q=${encodeURIComponent(selectedUniversity)}`}
         >
           See all areas
         </a>
