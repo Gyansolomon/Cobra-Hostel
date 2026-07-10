@@ -22,6 +22,17 @@ const topUniversities = [
   "UDS",
 ];
 
+const discoveryHrefs: Record<string, string> = {
+  "Cape Coast": "/cities/cape-coast",
+  Accra: "/cities/accra",
+  Kumasi: "/cities/kumasi",
+  Takoradi: "/cities/takoradi",
+  "University of Cape Coast": "/universities/ucc",
+  "University of Ghana": "/universities/ug",
+  KNUST: "/universities/knust",
+  "Takoradi Technical University": "/universities/ttu",
+};
+
 export default function SearchPage() {
   return (
     <main className="min-h-dvh bg-[#F7F7F7] pb-20 text-foreground lg:pb-0">
@@ -59,7 +70,7 @@ export default function SearchPage() {
 
         <nav className="mx-auto grid max-w-[72rem] grid-flow-col auto-cols-max gap-5 overflow-x-auto px-4 pb-0 [scrollbar-width:none] lg:px-8 [&::-webkit-scrollbar]:hidden">
           {filters.map((filter, index) => (
-            <a
+            <Link
               key={filter}
               href={index === 0 ? "/search" : `/search/results?q=${encodeURIComponent(filter)}`}
               className={`border-b-2 px-0.5 pb-2.5 text-xs font-semibold uppercase ${
@@ -69,7 +80,7 @@ export default function SearchPage() {
               }`}
             >
               {filter}
-            </a>
+            </Link>
           ))}
         </nav>
       </header>
@@ -116,13 +127,13 @@ export default function SearchPage() {
           {[
             { label: "Explore", icon: Discover, href: "/", active: true },
             { label: "Wishlist", icon: Heart, href: "/wishlist" },
-            { label: "Profile", icon: Profile, href: "#" },
+            { label: "Profile", icon: Profile, href: "/profile" },
           ].map((item) => {
             const Icon = item.icon;
 
             return (
               <li key={item.label}>
-                <a
+                <Link
                   className={`flex flex-col items-center gap-1 rounded-2xl px-2 py-1.5 ${
                     item.active ? "text-primary" : ""
                   }`}
@@ -130,7 +141,7 @@ export default function SearchPage() {
                 >
                   <Icon size={24} color="currentColor" variant="Linear" />
                   <span>{item.label}</span>
-                </a>
+                </Link>
               </li>
             );
           })}
@@ -160,7 +171,7 @@ function SearchChipSection({
         {items.map((item) => (
           <Link
             key={item}
-            href={`/search/results?q=${encodeURIComponent(item)}`}
+            href={discoveryHrefs[item] ?? `/search/results?q=${encodeURIComponent(item)}`}
             className="rounded-full border border-border bg-background px-3.5 py-1.5 text-xs font-semibold text-muted-foreground lg:px-4 lg:py-2 lg:text-sm"
           >
             {item}

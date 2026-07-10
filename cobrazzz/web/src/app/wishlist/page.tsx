@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import {
   Discover,
@@ -19,6 +20,8 @@ import {
 
 import { hostels, type Hostel } from "@/lib/hostels";
 import { PremiumAssetIcon, premiumAssets } from "@/components/premium-asset-icon";
+import { useApp } from "@/components/app-provider";
+import { readWishlist, WISHLIST_UPDATED_EVENT, writeWishlist } from "@/lib/wishlist-store";
 
 type ActivityTab = "wishlist" | "recentlyViewed" | "enquired" | "booked";
 
@@ -33,7 +36,7 @@ const emptyCopy: Record<ActivityTab, { description: string; action: string; href
   wishlist: {
     description: "Kindly login to save and view your wishlist",
     action: "Login",
-    href: "#login",
+    href: "/auth/login?returnTo=/wishlist",
   },
   recentlyViewed: {
     description: "Begin your accommodation search now to see your recently viewed properties right here!",
@@ -52,60 +55,33 @@ const emptyCopy: Record<ActivityTab, { description: string; action: string; href
   },
 };
 
-const WISHLIST_STORAGE_KEY = "cobraWishlistSlugs";
-const WISHLIST_COOKIE_KEY = "cobraWishlistSlugs";
-
-function readCookieSlugs() {
-  const match = document.cookie.match(new RegExp(`(?:^|; )${WISHLIST_COOKIE_KEY}=([^;]*)`));
-  if (!match) return [];
-
-  try {
-    const parsed = JSON.parse(decodeURIComponent(match[1]));
-    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
-  } catch {
-    return [];
-  }
-}
-
-function readSavedSlugs() {
-  try {
-    const raw = window.localStorage.getItem(WISHLIST_STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    const local = Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
-    return local.length > 0 ? local : readCookieSlugs();
-  } catch {
-    return readCookieSlugs();
-  }
-}
-
-function writeSavedSlugs(slugs: string[]) {
-  const value = JSON.stringify(slugs);
-  try {
-    window.localStorage.setItem(WISHLIST_STORAGE_KEY, value);
-  } catch {
-    // Cookie fallback keeps the temporary wishlist usable in restricted browser contexts.
-  }
-  document.cookie = `${WISHLIST_COOKIE_KEY}=${encodeURIComponent(value)}; path=/; max-age=31536000; SameSite=Lax`;
-  window.dispatchEvent(new CustomEvent("cobra:wishlist-updated", { detail: slugs }));
-}
-
 export default function MyActivitiesScreen() {
   const [activeTab, setActiveTab] = useState<ActivityTab>("wishlist");
   const [savedSlugs, setSavedSlugs] = useState<string[]>([]);
+  const { user, enquiries } = useApp();
   const recentlyViewed = useMemo(() => hostels.slice(0, 3), []);
-  const savedHostels = useMemo(() => hostels.filter((hostel) => savedSlugs.includes(hostel.slug)), [savedSlugs]);
-  const visibleHostels = activeTab === "wishlist" ? savedHostels : activeTab === "recentlyViewed" ? recentlyViewed : [];
+  const savedHostels = useMemo(() => user ? hostels.filter((hostel) => savedSlugs.includes(hostel.slug)) : [], [savedSlugs, user]);
+  const enquiredHostels = useMemo(() => enquiries.map((enquiry) => hostels.find((hostel) => hostel.slug === enquiry.hostelSlug)).filter((hostel): hostel is Hostel => Boolean(hostel)), [enquiries]);
+  const visibleHostels = activeTab === "wishlist" ? savedHostels : activeTab === "recentlyViewed" ? recentlyViewed : activeTab === "enquired" ? enquiredHostels : [];
   const showCards = visibleHostels.length > 0;
 
   useEffect(() => {
-    const sync = () => setSavedSlugs(readSavedSlugs());
+    const sync = () => setSavedSlugs(user ? readWishlist(user.email) : []);
     sync();
     window.addEventListener("storage", sync);
-    window.addEventListener("cobra:wishlist-updated", sync);
+    window.addEventListener(WISHLIST_UPDATED_EVENT, sync);
     return () => {
       window.removeEventListener("storage", sync);
-      window.removeEventListener("cobra:wishlist-updated", sync);
+      window.removeEventListener(WISHLIST_UPDATED_EVENT, sync);
     };
+  }, [user]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const tab = new URLSearchParams(window.location.search).get("tab");
+      if (tab && activityTabs.some((item) => item.id === tab)) setActiveTab(tab as ActivityTab);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   return (
@@ -227,7 +203,7 @@ function ActivityPropertyCard({ hostel, saved }: { hostel: Hostel; saved?: boole
               </h2>
             </Link>
             <p className="mt-0.5 line-clamp-1 text-xs leading-5 text-[#6B6F76] sm:text-[13px]">
-              {hostel.address}, Cape Coast
+              {hostel.address}
             </p>
           </div>
           <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[#1F2329] sm:text-sm">
@@ -264,18 +240,20 @@ function ActivityPropertyCard({ hostel, saved }: { hostel: Hostel; saved?: boole
 }
 
 function ActivityPropertyImage({ hostel, saved, href }: { hostel: Hostel; saved?: boolean; href: string }) {
+  const router = useRouter();
+  const { user } = useApp();
   const [isSaved, setIsSaved] = useState(Boolean(saved));
 
   useEffect(() => {
-    const sync = () => setIsSaved(readSavedSlugs().includes(hostel.slug));
+    const sync = () => setIsSaved(user ? readWishlist(user.email).includes(hostel.slug) : false);
     sync();
     window.addEventListener("storage", sync);
-    window.addEventListener("cobra:wishlist-updated", sync);
+    window.addEventListener(WISHLIST_UPDATED_EVENT, sync);
     return () => {
       window.removeEventListener("storage", sync);
-      window.removeEventListener("cobra:wishlist-updated", sync);
+      window.removeEventListener(WISHLIST_UPDATED_EVENT, sync);
     };
-  }, [hostel.slug]);
+  }, [hostel.slug, user]);
 
   return (
     <div className="relative">
@@ -308,9 +286,13 @@ function ActivityPropertyImage({ hostel, saved, href }: { hostel: Hostel; saved?
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
-          const current = readSavedSlugs();
+          if (!user) {
+            router.push(`/auth/login?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+            return;
+          }
+          const current = readWishlist(user.email);
           const next = current.includes(hostel.slug) ? current.filter((item) => item !== hostel.slug) : [...current, hostel.slug];
-          writeSavedSlugs(next);
+          writeWishlist(user.email, next);
           setIsSaved(next.includes(hostel.slug));
         }}
         className={`absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full bg-white/95 shadow-sm transition-colors hover:bg-white ${
@@ -383,7 +365,7 @@ function BottomNavigation() {
   const items = [
     { label: "Explore", href: "/", icon: Discover },
     { label: "Wishlist", href: "/wishlist", icon: IconsaxHeart, active: true },
-    { label: "Profile", href: "#profile", icon: Profile },
+    { label: "Profile", href: "/profile", icon: Profile },
   ];
 
   return (

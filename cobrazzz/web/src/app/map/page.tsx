@@ -12,6 +12,15 @@ export default async function MapPage({
   const params = await searchParams;
   const queryValue = Array.isArray(params?.q) ? params.q[0] : params?.q;
   const query = queryValue?.trim() || "UCC";
+  const normalizedQuery = query.toLowerCase();
+  const mapContext = normalizedQuery.includes("accra") || normalizedQuery.includes("ug") || normalizedQuery.includes("legon") || normalizedQuery.includes("madina")
+    ? { label: "Accra", city: "Accra", university: "UG", bbox: "-0.281%2C5.566%2C-0.119%2C5.706", marker: "5.650%2C-0.187" }
+    : normalizedQuery.includes("kumasi") || normalizedQuery.includes("knust") || normalizedQuery.includes("ayeduase") || normalizedQuery.includes("bomso")
+      ? { label: "Kumasi", city: "Kumasi", university: "KNUST", bbox: "-1.669%2C6.626%2C-1.516%2C6.748", marker: "6.674%2C-1.571" }
+      : normalizedQuery.includes("takoradi") || normalizedQuery.includes("ttu") || normalizedQuery.includes("effiakuma") || normalizedQuery.includes("anaji")
+        ? { label: "Takoradi", city: "Takoradi", university: "TTU", bbox: "-1.827%2C4.876%2C-1.699%2C4.963", marker: "4.914%2C-1.774" }
+        : { label: "Cape Coast", city: "Cape Coast", university: "UCC", bbox: "-1.314%2C5.098%2C-1.262%2C5.139", marker: "5.1165%2C-1.2895" };
+  const visibleHostels = hostels.filter((hostel) => hostel.city === mapContext.city || hostel.university === mapContext.university);
 
   return (
     <main className="min-h-dvh bg-[#F7F7F7] text-[#111827]">
@@ -22,7 +31,7 @@ export default async function MapPage({
           </Link>
           <div className="min-w-0">
             <h1 className="truncate text-base font-semibold lg:text-xl">Map near {query}</h1>
-            <p className="text-xs text-muted-foreground lg:text-sm">42 verified rooms around Cape Coast</p>
+            <p className="text-xs text-muted-foreground lg:text-sm">{visibleHostels.length} listed hostels around {mapContext.label}</p>
           </div>
           <Link
             href={`/search/results?q=${encodeURIComponent(query)}`}
@@ -39,13 +48,13 @@ export default async function MapPage({
           <div className="relative h-[calc(100dvh-11rem)] min-h-[28rem] lg:h-[calc(100dvh-8rem)]">
             <iframe
               title={`OpenStreetMap map results near ${query}`}
-              src="https://www.openstreetmap.org/export/embed.html?bbox=-1.314%2C5.098%2C-1.262%2C5.139&layer=mapnik&marker=5.1165%2C-1.2895"
+              src={`https://www.openstreetmap.org/export/embed.html?bbox=${mapContext.bbox}&layer=mapnik&marker=${mapContext.marker}`}
               className="h-full w-full border-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
             <div className="pointer-events-none absolute inset-0">
-              {hostels.map((hostel) => (
+              {visibleHostels.map((hostel) => (
                 <Link
                   key={hostel.slug}
                   href={`/hostels/${hostel.slug}`}
@@ -60,7 +69,7 @@ export default async function MapPage({
         </div>
 
         <aside className="space-y-3 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto lg:pr-1">
-          {hostels.map((hostel) => (
+          {visibleHostels.map((hostel) => (
             <Link
               key={hostel.slug}
               href={`/hostels/${hostel.slug}`}

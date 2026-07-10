@@ -26,16 +26,8 @@ import { MobileMapSheet } from "@/components/mobile-map-sheet";
 import { MobileMenuButton } from "@/components/mobile-menu-overlay";
 import { PremiumAssetIcon, premiumAssets } from "@/components/premium-asset-icon";
 import { ListingSaveButton } from "@/components/listing-save-button";
-import { SearchFilterControls } from "@/components/search-filter-controls";
-
-const filterPills = [
-  { label: "Sort", active: false, sort: true },
-  { label: "University", active: false },
-  { label: "Locality", active: false },
-  { label: "Budget", active: false },
-  { label: "Move-in", active: false },
-  { label: "Room type", active: false },
-];
+import { SearchFilterControls, SortControl } from "@/components/search-filter-controls";
+import { hostels as hostelCatalog } from "@/lib/hostels";
 
 function getHostelHref(name: string) {
   return `/hostels/${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
@@ -45,7 +37,7 @@ function getHostelSlug(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-const hostels = [
+const featuredHostels = [
   {
     name: "Science View Residence",
     room: "2 in a room",
@@ -116,6 +108,11 @@ const hostels = [
   },
 ];
 
+const hostels = [
+  ...featuredHostels,
+  ...hostelCatalog.filter((hostel) => !featuredHostels.some((featured) => featured.name === hostel.name)),
+];
+
 const trustItems = [
   {
     title: "Verified properties",
@@ -137,13 +134,28 @@ const trustItems = [
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string | string[] }>;
+  searchParams?: Promise<{ q?: string | string[]; filters?: string | string[]; sort?: string | string[] }>;
 }) {
   const params = await searchParams;
   const queryValue = Array.isArray(params?.q) ? params.q[0] : params?.q;
+  const filterValue = Array.isArray(params?.filters) ? params.filters[0] : params?.filters;
+  const sortValue = Array.isArray(params?.sort) ? params.sort[0] : params?.sort;
   const query = queryValue?.trim() || "UCC, Cape Coast";
   const place = query.toLowerCase().includes("ucc") ? "UCC" : query;
   const resultTitle = `Student Hostels in ${place}`;
+  const searchWords = query.toLowerCase().split(/\s+/).filter((word) => word.length > 2 && !["hostels", "hostel", "rooms", "room", "student"].includes(word));
+  const selectedFilters = filterValue?.split(",").filter(Boolean) ?? [];
+  const filteredHostels = hostels.filter((hostel) => {
+    const searchable = `${hostel.name} ${hostel.area} ${hostel.address} ${"city" in hostel ? hostel.city : "Cape Coast"} ${"university" in hostel ? hostel.university : "UCC"} ${hostel.tags.join(" ")}`.toLowerCase();
+    const matchesSearch = searchWords.length === 0 || searchWords.some((word) => searchable.includes(word));
+    const matchesFilters = selectedFilters.length === 0 || selectedFilters.every((filter) => searchable.includes(filter.toLowerCase()));
+    return matchesSearch && matchesFilters;
+  });
+  const visibleHostels = [...(filteredHostels.length > 0 ? filteredHostels : hostels)].sort((a, b) => {
+    if (sortValue === "Lowest price first") return Number(a.price.replace(/\D/g, "")) - Number(b.price.replace(/\D/g, ""));
+    if (sortValue === "Highest rated") return Number(b.rating) - Number(a.rating);
+    return 0;
+  });
 
   return (
     <main className="min-h-dvh bg-background pb-24 text-foreground lg:pb-0">
@@ -173,9 +185,9 @@ export default async function SearchPage({
                 {["Cape Coast", "UCC", place].map((item, index) => (
                   <span key={`${item}-${index}`} className="inline-flex items-center gap-1">
                     {index > 0 ? <span className="text-[#1F2329]">/</span> : null}
-                    <button type="button" className="hover:text-primary">
+                    <Link href={index === 0 ? "/cities/cape-coast" : index === 1 ? "/universities/ucc" : `/search/results?q=${encodeURIComponent(item)}`} className="hover:text-primary">
                       {item}
-                    </button>
+                    </Link>
                   </span>
                 ))}
               </nav>
@@ -183,7 +195,7 @@ export default async function SearchPage({
                 {resultTitle}
               </h1>
               <p className="mt-0.5 text-[13px] leading-5 text-[#6B6F76] sm:text-base">
-                Showing 42 verified rooms near UCC and Cape Coast
+                Showing {visibleHostels.length} reviewed hostel options near {place}
               </p>
               <p className="mt-0.5 line-clamp-1 text-[13px] leading-5 text-[#3F4248] lg:hidden">
                 Looking for student accommodation in {place}? <span className="font-bold underline underline-offset-2">Read More</span>
@@ -192,7 +204,7 @@ export default async function SearchPage({
           </div>
 
           <div className="mt-3 grid gap-3.5 sm:mt-5 sm:gap-5">
-            {hostels.map((hostel, index) => (
+            {visibleHostels.map((hostel, index) => (
               <HostelListingCard
                 key={hostel.name}
                 hostel={hostel}
@@ -204,13 +216,13 @@ export default async function SearchPage({
 
         <aside className="hidden lg:block">
           <div className="sticky top-[8.35rem] space-y-4">
-            <MapPreview />
+            <MapPreview hostels={visibleHostels} />
             <TrustRail />
           </div>
         </aside>
       </section>
 
-      <MobileMapSheet hostels={hostels} />
+      <MobileMapSheet hostels={visibleHostels} />
 
       <MobilePrimaryNav />
     </main>
@@ -278,19 +290,19 @@ function SearchHeader({ query }: { query: string }) {
             />
           </label>
           <span className="h-7 w-px bg-border" aria-hidden="true" />
-          <button
-            type="button"
-            className="h-11 rounded-full px-5 text-sm font-semibold text-[#1F2329] hover:bg-secondary"
+          <Link
+            href={`/search/results?q=${encodeURIComponent(query)}&filters=${encodeURIComponent("Available now")}`}
+            className="inline-flex h-11 items-center rounded-full px-5 text-sm font-semibold text-[#1F2329] hover:bg-secondary"
           >
             Any semester
-          </button>
+          </Link>
           <span className="h-7 w-px bg-border" aria-hidden="true" />
-          <button
-            type="button"
-            className="h-11 rounded-full px-5 text-sm font-semibold text-[#1F2329] hover:bg-secondary"
+          <Link
+            href={`/search/results?q=${encodeURIComponent(query)}&filters=${encodeURIComponent("Private room")}`}
+            className="inline-flex h-11 items-center rounded-full px-5 text-sm font-semibold text-[#1F2329] hover:bg-secondary"
           >
             Any room
-          </button>
+          </Link>
           <button
             type="submit"
             className="ml-1 grid size-11 place-items-center rounded-full bg-primary text-primary-foreground transition-colors hover:bg-[#E31C5F] active:scale-[0.97]"
@@ -301,16 +313,16 @@ function SearchHeader({ query }: { query: string }) {
         </form>
 
         <div className="flex items-center justify-end gap-3">
-          <a className="text-sm font-semibold text-[#1F2329]" href="/search/results?q=managers">
+          <Link className="text-sm font-semibold text-[#1F2329]" href="/list-your-hostel">
             List your hostel
-          </a>
-          <button
-            type="button"
+          </Link>
+          <Link
+            href="/onboarding"
             className="grid size-11 place-items-center rounded-full bg-secondary text-[#1F2329]"
             aria-label="Choose language"
           >
             <Globe2 className="size-5" aria-hidden="true" />
-          </button>
+          </Link>
           <MobileMenuButton
             className="grid size-11 place-items-center rounded-full bg-secondary text-[#1F2329]"
           >
@@ -323,21 +335,11 @@ function SearchHeader({ query }: { query: string }) {
         className="mx-auto flex h-11 w-full max-w-[96rem] items-center gap-2 overflow-x-auto border-t border-[#E5E7EB] px-4 shadow-[0_4px_10px_rgba(15,23,42,0.10)] sm:px-6 lg:h-16 lg:justify-center lg:gap-3 lg:border-t lg:px-10 lg:shadow-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         aria-label="Search filters"
       >
-        {filterPills.map((filter) => (
-          <button
-            key={filter.label}
-            type="button"
-            className={`inline-flex h-[30px] shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition-colors lg:h-9 lg:px-4 ${
-              filter.active
-                ? "border-primary bg-card text-primary"
-                : "border-[#D9D9DE] bg-card text-[#1F2329] hover:border-primary/40 hover:bg-secondary"
-            }`}
-          >
-            {filter.sort ? <SlidersIcon /> : null}
-            {filter.label}
-          </button>
-        ))}
+        <SortControl />
         <SearchFilterControls />
+        <Link href="/search" className="inline-flex h-[30px] shrink-0 items-center rounded-full border border-[#D9D9DE] bg-card px-3 text-xs font-semibold lg:h-9 lg:px-4">Change search</Link>
+        <Link href={`/map?q=${encodeURIComponent(query)}`} className="inline-flex h-[30px] shrink-0 items-center rounded-full border border-[#D9D9DE] bg-card px-3 text-xs font-semibold lg:h-9 lg:px-4">Map</Link>
+        <Link href="/safety" className="inline-flex h-[30px] shrink-0 items-center rounded-full border border-[#D9D9DE] bg-card px-3 text-xs font-semibold lg:h-9 lg:px-4">Verification</Link>
       </nav>
     </header>
   );
@@ -474,17 +476,7 @@ function FeaturePill({ children }: { children: React.ReactNode }) {
   );
 }
 
-function SlidersIcon() {
-  return (
-    <span className="grid size-4 place-items-center" aria-hidden="true">
-      <span className="h-px w-4 bg-current" />
-      <span className="-mt-1 h-px w-3 bg-current" />
-      <span className="-mt-1 h-px w-2 bg-current" />
-    </span>
-  );
-}
-
-function MapPreview() {
+function MapPreview({ hostels: mapHostels }: { hostels: typeof hostels }) {
   return (
     <Link href="/map?q=UCC" className="block overflow-hidden rounded-[1.1rem] border border-border bg-secondary" aria-label="Open map results near UCC">
       <div className="relative h-[23rem]">
@@ -494,7 +486,7 @@ function MapPreview() {
         <div className="absolute left-10 top-10 rounded-full bg-card px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm">
           UCC
         </div>
-        {hostels.map((hostel) => (
+        {mapHostels.map((hostel) => (
           <span
             key={hostel.name}
             className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground shadow-md transition-colors hover:border-primary hover:text-primary"
@@ -568,13 +560,13 @@ function MobilePrimaryNav() {
         {[
           { label: "Explore", icon: Discover, href: "/", active: true },
           { label: "Wishlist", icon: Heart, href: "/wishlist" },
-          { label: "Profile", icon: Profile, href: "#" },
+          { label: "Profile", icon: Profile, href: "/profile" },
         ].map((item) => {
           const Icon = item.icon;
 
           return (
             <li key={item.label}>
-              <a
+              <Link
                   className={`flex flex-col items-center gap-0.5 rounded-2xl px-2 py-1 ${
                   item.active ? "text-primary" : ""
                 }`}
@@ -582,7 +574,7 @@ function MobilePrimaryNav() {
               >
                 <Icon size={21} color="currentColor" variant="Linear" />
                 <span>{item.label}</span>
-              </a>
+              </Link>
             </li>
           );
         })}

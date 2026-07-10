@@ -1,6 +1,8 @@
 "use client";
 
 import type React from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -40,6 +42,23 @@ type TriggerProps = {
 };
 
 export function SearchFilterControls({ className, compact = false }: TriggerProps) {
+  const router = useRouter();
+  const [selected, setSelected] = useState<string[]>(["Science / New Site", "2 in a room"]);
+
+  const toggle = (option: string) => setSelected((current) => current.includes(option) ? current.filter((item) => item !== option) : [...current, option]);
+  const apply = () => {
+    const params = new URLSearchParams(window.location.search);
+    if (selected.length) params.set("filters", selected.join(","));
+    else params.delete("filters");
+    router.push(`/search/results?${params.toString()}`);
+  };
+  const reset = () => {
+    setSelected([]);
+    const params = new URLSearchParams(window.location.search);
+    params.delete("filters");
+    router.push(`/search/results?${params.toString()}`);
+  };
+
   return (
     <>
       <Sheet>
@@ -51,10 +70,10 @@ export function SearchFilterControls({ className, compact = false }: TriggerProp
           <SheetHeader className="border-b border-border pb-3">
             <SheetTitle>Filters</SheetTitle>
           </SheetHeader>
-          <FilterForm />
+          <FilterForm selected={selected} onToggle={toggle} />
           <SheetFooter className="border-t border-border bg-card">
-            <SheetClose render={<Button className="h-11 rounded-full" />}>
-              Show 42 rooms
+            <SheetClose render={<Button className="h-11 rounded-full" onClick={apply} />}>
+              Show matching rooms
             </SheetClose>
           </SheetFooter>
         </SheetContent>
@@ -82,13 +101,13 @@ export function SearchFilterControls({ className, compact = false }: TriggerProp
               Narrow the list by area, room type, price, amenities, and review status.
             </DialogDescription>
           </DialogHeader>
-          <FilterForm desktop />
+          <FilterForm desktop selected={selected} onToggle={toggle} />
           <DialogFooter className="m-0 rounded-none">
-            <DialogClose render={<Button variant="outline" className="h-10 rounded-full" />}>
+            <DialogClose render={<Button variant="outline" className="h-10 rounded-full" onClick={reset} />}>
               Reset
             </DialogClose>
-            <DialogClose render={<Button className="h-10 rounded-full" />}>
-              Show 42 rooms
+            <DialogClose render={<Button className="h-10 rounded-full" onClick={apply} />}>
+              Show matching rooms
             </DialogClose>
           </DialogFooter>
         </DialogContent>
@@ -98,6 +117,13 @@ export function SearchFilterControls({ className, compact = false }: TriggerProp
 }
 
 export function SortControl() {
+  const router = useRouter();
+  const [selectedSort, setSelectedSort] = useState("Recommended");
+  const applySort = () => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("sort", selectedSort);
+    router.push(`/search/results?${params.toString()}`);
+  };
   return (
     <Dialog>
       <DialogTrigger
@@ -109,7 +135,7 @@ export function SortControl() {
         }
       >
         <SlidersHorizontal className="size-3.5 sm:size-4" aria-hidden="true" />
-        Sort: Recommended
+        Sort: {selectedSort}
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
@@ -119,14 +145,15 @@ export function SortControl() {
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
-          {["Recommended", "Lowest price first", "Closest to UCC", "Highest rated"].map((option, index) => (
+          {["Recommended", "Lowest price first", "Closest to UCC", "Highest rated"].map((option) => (
             <label
               key={option}
               className="flex cursor-pointer items-center justify-between rounded-xl border border-border px-3 py-3 text-sm font-semibold hover:bg-secondary"
             >
               <span>{option}</span>
               <input
-                defaultChecked={index === 0}
+                checked={selectedSort === option}
+                onChange={() => setSelectedSort(option)}
                 className="size-4 accent-primary"
                 name="sort"
                 type="radio"
@@ -135,7 +162,7 @@ export function SortControl() {
           ))}
         </div>
         <DialogFooter>
-          <DialogClose render={<Button className="h-10 rounded-full" />}>
+          <DialogClose render={<Button className="h-10 rounded-full" onClick={applySort} />}>
             Apply sort
           </DialogClose>
         </DialogFooter>
@@ -164,7 +191,7 @@ function SheetTriggerButton({ className, compact }: TriggerProps) {
   );
 }
 
-function FilterForm({ desktop = false }: { desktop?: boolean }) {
+function FilterForm({ desktop = false, selected, onToggle }: { desktop?: boolean; selected: string[]; onToggle: (option: string) => void }) {
   return (
     <div className={cn("overflow-y-auto px-4 py-4", desktop && "max-h-[60dvh] px-5")}>
       <Tabs defaultValue="stay">
@@ -176,13 +203,13 @@ function FilterForm({ desktop = false }: { desktop?: boolean }) {
 
         <TabsContent className="mt-5 space-y-6" value="stay">
           <FilterGroup title="Area">
-            <OptionGrid options={areas} defaults={["Science / New Site"]} />
+            <OptionGrid options={areas} selected={selected} onToggle={onToggle} />
           </FilterGroup>
           <FilterGroup title="Room type">
-            <OptionGrid options={roomTypes} defaults={["2 in a room"]} />
+            <OptionGrid options={roomTypes} selected={selected} onToggle={onToggle} />
           </FilterGroup>
           <FilterGroup title="Amenities">
-            <OptionGrid columns={desktop ? 3 : 2} options={amenities} defaults={["Bills included", "Private washroom"]} />
+            <OptionGrid columns={desktop ? 3 : 2} options={amenities} selected={selected} onToggle={onToggle} />
           </FilterGroup>
         </TabsContent>
 
@@ -200,13 +227,13 @@ function FilterForm({ desktop = false }: { desktop?: boolean }) {
             </div>
           </FilterGroup>
           <FilterGroup title="Availability">
-            <OptionGrid options={availability} defaults={["This semester"]} />
+            <OptionGrid options={availability} selected={selected} onToggle={onToggle} />
           </FilterGroup>
         </TabsContent>
 
         <TabsContent className="mt-5 space-y-6" value="trust">
           <FilterGroup title="Verification">
-            <OptionGrid options={verification} defaults={["Admin reviewed"]} />
+            <OptionGrid options={verification} selected={selected} onToggle={onToggle} />
           </FilterGroup>
           <div className="rounded-xl border border-[#B9DEC6] bg-[#EAF5EE] p-4 text-sm leading-6 text-[#2F7D4F]">
             Physically verified means a room has been checked beyond manager submission.
@@ -228,11 +255,13 @@ function FilterGroup({ title, children }: { title: string; children: React.React
 
 function OptionGrid({
   columns = 2,
-  defaults = [],
+  selected,
+  onToggle,
   options,
 }: {
   columns?: 2 | 3;
-  defaults?: string[];
+  selected: string[];
+  onToggle: (option: string) => void;
   options: string[];
 }) {
   return (
@@ -246,7 +275,7 @@ function OptionGrid({
             className="group flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-border px-3 py-2.5 text-sm font-semibold hover:bg-secondary"
             htmlFor={id}
           >
-            <Checkbox id={id} defaultChecked={defaults.includes(option)} />
+            <Checkbox id={id} checked={selected.includes(option)} onCheckedChange={() => onToggle(option)} />
             <span>{option}</span>
           </label>
         );

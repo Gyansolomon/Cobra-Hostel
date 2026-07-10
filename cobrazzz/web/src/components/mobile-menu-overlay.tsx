@@ -19,6 +19,9 @@ import {
   X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { useApp } from "@/components/app-provider";
 
 type MobileMenuButtonProps = {
   children: React.ReactNode;
@@ -41,6 +44,7 @@ export function MobileMenuButton({ children, className, label = "Open menu" }: M
 
 export function MobileMenuOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [supportOpen, setSupportOpen] = useState(false);
+  const { ready, user } = useApp();
 
   useEffect(() => {
     if (!open) return;
@@ -63,28 +67,30 @@ export function MobileMenuOverlay({ open, onClose }: { open: boolean; onClose: (
           <MobileMenuItem icon={Headphones} label="Support" rightIcon={ChevronDown} expanded={supportOpen} onClick={() => setSupportOpen(!supportOpen)} />
           {supportOpen ? (
             <div className="ml-10 space-y-2 pb-2 text-[13px] font-medium leading-6 text-muted-foreground">
-              <button type="button" className="block text-left">Chat with support</button>
-              <button type="button" className="block text-left">Call hostel advisor</button>
-              <button type="button" className="block text-left">Help center</button>
+              <Link href="/support?topic=chat" className="block">Chat with support</Link>
+              <Link href="/support?topic=advisor" className="block">Call hostel advisor</Link>
+              <Link href="/support" className="block">Help center</Link>
+              <Link href="/how-it-works" className="block">How Cobra works</Link>
+              <Link href="/safety" className="block">Safety and verification</Link>
             </div>
           ) : null}
           <MobileMenuItem icon={Heart} label="Wishlist" href="/wishlist" />
-          <MobileMenuItem icon={Languages} label="Select Preferences" rightIcon={ChevronRight} />
+          <MobileMenuItem icon={Languages} label="Select Preferences" rightIcon={ChevronRight} href="/onboarding" />
         </MobileMenuList>
 
         <MenuDivider />
-        <p className="px-10 py-3 text-sm font-medium text-muted-foreground">Login to Continue</p>
+        <p className="px-10 py-3 text-sm font-medium text-muted-foreground">{ready && user ? `Signed in as ${user.firstName}` : "Login to continue"}</p>
         <MobileMenuList>
-          <MobileMenuItem icon={User} label="Profile" />
-          <MobileMenuItem icon={CalendarDays} label="Bookings" />
+          <MobileMenuItem icon={User} label="Profile" href="/profile" />
+          <MobileMenuItem icon={CalendarDays} label="Bookings" href="/wishlist?tab=booked" />
         </MobileMenuList>
 
         <MenuDivider />
         <MobileMenuList>
-          <MobileMenuItem icon={Users} label="Group Booking" badge={<MenuBadge>New</MenuBadge>} />
-          <MobileMenuItem icon={UserPlus} label="Refer a Friend" badge={<MenuBadge>Get bonus</MenuBadge>} />
-          <MobileMenuItem icon={Handshake} label="Partner with Us" />
-          <MobileMenuItem icon={NotebookTabs} label="List Your Hostel" />
+          <MobileMenuItem icon={Users} label="Group Booking" href="/support?topic=group-booking" badge={<MenuBadge>New</MenuBadge>} />
+          <MobileMenuItem icon={UserPlus} label="Refer a Friend" href="/support?topic=referral" badge={<MenuBadge>Get bonus</MenuBadge>} />
+          <MobileMenuItem icon={Handshake} label="Partner with Us" href="/list-your-hostel" />
+          <MobileMenuItem icon={NotebookTabs} label="List Your Hostel" href="/list-your-hostel" />
         </MobileMenuList>
 
         <MenuDivider />
@@ -174,20 +180,24 @@ function DownloadAppPromoCard() {
           4.8/5 | Trusted by students
         </p>
       </div>
-      <button type="button" className="h-10 shrink-0 rounded-lg border border-primary bg-white px-3 text-sm font-medium text-primary">
+      <Link href="/support?topic=mobile-app" className="inline-flex h-10 shrink-0 items-center rounded-lg border border-primary bg-white px-3 text-sm font-medium text-primary">
         Download App
-      </button>
+      </Link>
     </div>
   );
 }
 
 function MenuLoginButton() {
+  const router = useRouter();
+  const { ready, user, logout } = useApp();
+
   return (
     <div className="shrink-0 border-t border-border bg-white p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
-      <button type="button" className="flex h-12 w-full items-center justify-center gap-3 rounded-lg border border-[#D6DAE1] bg-white text-base font-medium text-[#111827]">
-        <LogIn className="size-5" strokeWidth={1.9} aria-hidden="true" />
-        Login
-      </button>
+      {ready && user ? (
+        <button type="button" onClick={() => { logout(); router.push("/"); }} className="flex h-12 w-full items-center justify-center gap-3 rounded-lg border border-[#D6DAE1] bg-white text-base font-medium text-[#111827]"><LogIn className="size-5 rotate-180" />Log out</button>
+      ) : (
+        <Link href="/auth/login" className="flex h-12 w-full items-center justify-center gap-3 rounded-lg border border-[#D6DAE1] bg-white text-base font-medium text-[#111827]"><LogIn className="size-5" strokeWidth={1.9} />Login</Link>
+      )}
     </div>
   );
 }

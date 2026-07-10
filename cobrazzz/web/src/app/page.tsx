@@ -1,9 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowDown2,
-  ArrowLeft,
-  ArrowRight,
   ArrowRight2,
   Calendar2,
   Location,
@@ -13,6 +10,7 @@ import {
 
 import { AreaMapClient } from "@/components/area-map-client";
 import { HomeHeader } from "@/components/home-header";
+import { HomeLocationFilterBar } from "@/components/home-location-filter-bar";
 import { PremiumAssetIcon, premiumAssets } from "@/components/premium-asset-icon";
 import { PropertyCard } from "@/components/ui/card-3";
 
@@ -48,21 +46,13 @@ const capeCoastUniversities = [
 ];
 
 const selectedUniversity = "UCC";
+const universityHrefs: Record<string, string> = { UCC: "/universities/ucc", CCTU: "/universities/cctu", NDU: "/search/results?q=NDU" };
 
 const recentSearches = [
   `${selectedUniversity} hostels`,
   "Science rooms",
   "Ayensu",
   "2 in a room",
-];
-
-const locationUniversityFilters = [
-  "UCC",
-  "CCTU",
-  "NDU",
-  "Science",
-  "Ayensu",
-  "Kwaprow",
 ];
 
 const hostelRows = [
@@ -439,20 +429,20 @@ function MobileStatsAndCities() {
               Explore campuses before comparing nearby rooms.
             </p>
           </div>
-          <a
-            href="/search/results?q=Cape%20Coast%20universities"
+          <Link
+            href="/cities/cape-coast"
             className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-neutral-200 text-foreground"
             aria-label="View more universities in Cape Coast"
           >
             <ArrowRight2 size={17} color="currentColor" variant="Linear" />
-          </a>
+          </Link>
         </div>
 
         <div className="-mx-3 mt-3 grid grid-flow-col auto-cols-[8.75rem] gap-3 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {capeCoastUniversities.map((university) => (
-            <a
+            <Link
               key={university.initials}
-              href={`/search/results?q=${encodeURIComponent(university.initials)}`}
+              href={universityHrefs[university.initials] ?? "/search"}
               className="group overflow-hidden rounded-[1.35rem] bg-card shadow-sm ring-1 ring-border"
             >
               <div className="relative h-24 overflow-hidden">
@@ -474,7 +464,7 @@ function MobileStatsAndCities() {
                   {university.stays}
                 </p>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </section>
@@ -494,13 +484,13 @@ function ContinueSearchJourney() {
       </h2>
       <div className="-mx-3 mt-3 flex gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {recentSearches.map((search) => (
-          <a
+          <Link
             key={search}
             href={`/search/results?q=${encodeURIComponent(search)}`}
             className="shrink-0 rounded-full border border-border bg-transparent px-4 py-2 text-xs font-semibold text-foreground"
           >
             {search}
-          </a>
+          </Link>
         ))}
       </div>
     </section>
@@ -521,13 +511,13 @@ function ContinueWhereLeftOff() {
             Rooms you recently checked near Cape Coast.
           </p>
         </div>
-        <a
+        <Link
           href={`/search/results?q=${encodeURIComponent(selectedUniversity)}`}
           className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-neutral-200 text-foreground"
           aria-label="View saved hostel previews"
         >
           <ArrowRight2 size={17} color="currentColor" variant="Linear" />
-        </a>
+        </Link>
       </div>
 
       <div className="-mx-3 mt-3 grid grid-flow-col auto-cols-[14.5rem] gap-3 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -609,13 +599,13 @@ function SearchField({
   value: string;
 }) {
   return (
-    <button className="flex min-h-12 items-center gap-3 rounded-full px-4 text-left transition-colors hover:bg-secondary active:scale-[0.99]">
+    <span className="flex min-h-12 items-center gap-3 rounded-full px-4 text-left transition-colors hover:bg-secondary">
       <Icon size={20} color="currentColor" variant="Linear" />
       <span>
         <span className="block text-sm font-semibold leading-5">{label}</span>
         <span className="block text-sm leading-5 text-muted-foreground">{value}</span>
       </span>
-    </button>
+    </span>
   );
 }
 
@@ -625,7 +615,7 @@ function HostelBrowseRows() {
       {hostelRows.map((row, rowIndex) => (
         <section key={row.title} aria-labelledby={`hostel-row-${rowIndex}`}>
           <div className="mb-5 flex items-center justify-between gap-4">
-            <a
+            <Link
               className="group inline-flex w-full items-center justify-between gap-2 lg:w-auto lg:justify-start"
               href={`/search/results?q=${encodeURIComponent(selectedUniversity)}`}
               aria-label={`View more ${row.title.toLowerCase()}`}
@@ -646,25 +636,10 @@ function HostelBrowseRows() {
               <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[#F1F1F1] text-foreground transition-colors group-hover:bg-[#E7E7E7] group-active:scale-[0.97]">
                 <ArrowRight2 size={16} color="currentColor" variant="Linear" />
               </span>
-            </a>
-
-            <div className="hidden items-center gap-2 lg:flex">
-              <button
-                className="grid size-8 place-items-center text-muted-foreground hover:text-foreground"
-                aria-label={`Previous ${row.title.toLowerCase()}`}
-              >
-                <ArrowLeft size={17} color="currentColor" variant="Linear" />
-              </button>
-              <button
-                className="grid size-8 place-items-center text-foreground hover:text-primary"
-                aria-label={`Next ${row.title.toLowerCase()}`}
-              >
-                <ArrowRight size={17} color="currentColor" variant="Linear" />
-              </button>
-            </div>
+            </Link>
           </div>
 
-          {rowIndex === 0 ? <LocationFilterBar /> : null}
+          {rowIndex === 0 ? <HomeLocationFilterBar /> : null}
 
           <div className="grid grid-flow-col auto-cols-[14.5rem] gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain pb-1 [scrollbar-width:none] sm:auto-cols-[15rem] lg:auto-cols-[15.5rem] lg:gap-3.5 lg:overflow-hidden lg:pb-0 xl:auto-cols-[16rem] [&::-webkit-scrollbar]:hidden">
             {row.hostels.map((hostel, index) => (
@@ -678,53 +653,6 @@ function HostelBrowseRows() {
         </section>
       ))}
     </div>
-  );
-}
-
-function LocationFilterBar() {
-  return (
-    <div className="-mx-3 -mt-2 mb-4 overflow-hidden px-3 lg:hidden">
-      <div className="flex min-w-0 items-center">
-        <CityDropdownChip />
-        <span className="mx-3 h-8 w-px shrink-0 bg-border" aria-hidden="true" />
-        <div className="flex min-w-0 flex-1 gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {locationUniversityFilters.map((university, index) => (
-            <UniversityFilterChip key={university} label={university} active={index === 0} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CityDropdownChip() {
-  return (
-    <button
-      className="flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-primary bg-transparent px-3 text-xs font-semibold text-primary"
-      type="button"
-      aria-label="Choose city"
-    >
-      <span className="grid size-5 place-items-center rounded-full border border-primary/25 bg-primary/10 text-[9px] font-bold">
-        CC
-      </span>
-      <span>Cape Coast</span>
-      <ArrowDown2 size={12} color="currentColor" variant="Linear" />
-    </button>
-  );
-}
-
-function UniversityFilterChip({ label, active }: { label: string; active?: boolean }) {
-  return (
-    <button
-      className={`h-9 shrink-0 rounded-full border px-4 text-xs font-semibold transition-colors ${
-        active
-          ? "border-primary bg-transparent text-primary"
-          : "border-border bg-transparent text-foreground hover:border-primary/45 hover:text-primary"
-      }`}
-      type="button"
-    >
-      {label}
-    </button>
   );
 }
 
@@ -767,20 +695,20 @@ function AreaDiscovery() {
           </p>
         </div>
 
-        <a
+        <Link
           className="grid size-8 shrink-0 place-items-center rounded-full bg-neutral-200 text-foreground transition-colors hover:bg-neutral-300 lg:hidden"
           href={`/map?q=${encodeURIComponent(selectedUniversity)}`}
           aria-label={`See all ${selectedUniversity} hostel areas`}
         >
           <ArrowRight2 size={17} color="currentColor" variant="Linear" />
-        </a>
+        </Link>
 
-        <a
+        <Link
           className="hidden rounded-full bg-secondary px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted lg:inline-flex"
           href={`/map?q=${encodeURIComponent(selectedUniversity)}`}
         >
           See all areas
-        </a>
+        </Link>
       </div>
 
       <AreaMap />

@@ -19,7 +19,6 @@ import {
   Droplets,
   Gamepad2,
   GraduationCap,
-  Heart,
   Headphones,
   Home,
   Info,
@@ -45,7 +44,8 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import type { Hostel } from "@/lib/hostels";
+import { ListingSaveButton } from "@/components/listing-save-button";
+import { hostels as hostelCatalog, type Hostel } from "@/lib/hostels";
 
 type Tab = {
   id: string;
@@ -194,7 +194,7 @@ export function HostelDetailsClient({ hostel }: { hostel: Hostel }) {
       <div className="mx-auto max-w-[58rem] px-2 lg:max-w-[72rem] lg:px-8">
         <PropertySummaryCard hostel={hostel} />
         <section id="offers" className="scroll-mt-28">
-          <OffersCard />
+          <OffersCard hostelSlug={hostel.slug} />
         </section>
         <TrustBenefitsCard />
         <section id="description" className="scroll-mt-28">
@@ -221,9 +221,9 @@ export function HostelDetailsClient({ hostel }: { hostel: Hostel }) {
         <section id="map" className="scroll-mt-28">
           <NearbyLocationsMapCard />
         </section>
-        <LiveTourCard />
+        <LiveTourCard hostelSlug={hostel.slug} />
         <section id="reviews" className="scroll-mt-28">
-          <ReviewsCard />
+          <ReviewsCard hostel={hostel} />
         </section>
         <section id="priceTrend" className="scroll-mt-28">
           <PriceTrendCard />
@@ -242,6 +242,7 @@ export function HostelDetailsClient({ hostel }: { hostel: Hostel }) {
         hidden={footerInView}
         pastAvailabilitySection={pastAvailabilitySection}
         onSeeAvailability={() => scrollToSection("roomTypes")}
+        hostelSlug={hostel.slug}
       />
     </main>
   );
@@ -271,9 +272,13 @@ function PropertyHeroGallery({ hostel, images }: { hostel: Hostel; images: strin
       </div>
 
       <div className="absolute right-3 top-3 z-10 flex gap-2 lg:right-5 lg:top-5">
-        <HeroIconButton label="Search" icon={Search} />
-        <HeroIconButton label={`Share ${hostel.name}`} icon={Share2} />
-        <HeroIconButton label={`Save ${hostel.name}`} icon={Heart} />
+        <HeroIconButton label="Search" icon={Search} href="/search" />
+        <HeroIconButton label={`Share ${hostel.name}`} icon={Share2} onClick={() => shareHostel(hostel)} />
+        <ListingSaveButton
+          slug={hostel.slug}
+          name={hostel.name}
+          className="static grid size-8 place-items-center rounded-full bg-white shadow-sm lg:size-9"
+        />
       </div>
 
       <div className="absolute inset-x-3 bottom-[4.9rem] z-10 flex items-center justify-between lg:bottom-5">
@@ -336,9 +341,9 @@ function PropertySummaryCard({ hostel }: { hostel: Hostel }) {
               </p>
             </div>
           </div>
-          <button type="button" className="shrink-0 text-xs font-extrabold text-primary">
+          <Link href={`/map?q=${encodeURIComponent(`${hostel.city} ${hostel.university}`)}`} className="shrink-0 text-xs font-extrabold text-primary">
             View map
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -397,15 +402,15 @@ function FeatureChipRow({
         </span>
       ))}
       {action ? (
-        <button type="button" className="h-6 shrink-0 px-1 text-[10.5px] font-extrabold leading-none text-primary">
+        <span className="h-6 shrink-0 px-1 text-[10.5px] font-extrabold leading-6 text-primary">
           {action}
-        </button>
+        </span>
       ) : null}
     </div>
   );
 }
 
-function OffersCard() {
+function OffersCard({ hostelSlug }: { hostelSlug: string }) {
   const offers = [
     "Reserve early and save on your first month",
     "Refer a roommate and receive hostel credit",
@@ -428,20 +433,15 @@ function OffersCard() {
 
       <div className="divide-y divide-border px-4 sm:px-5">
         {offers.map((offer) => (
-          <button key={offer} type="button" className="flex w-full items-center gap-3 py-3 text-left">
+          <Link key={offer} href={`/request/${hostelSlug}?offer=${encodeURIComponent(offer)}`} className="flex w-full items-center gap-3 py-3 text-left">
             <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[#FFF0F5] text-[#111827]">
               <Tag className="size-4 text-primary" aria-hidden="true" />
             </span>
             <span className="min-w-0 flex-1 text-[13px] font-semibold leading-5">{offer}</span>
             <ChevronRight className="size-4 shrink-0" aria-hidden="true" />
-          </button>
+          </Link>
         ))}
       </div>
-
-      <button type="button" className="mx-auto flex items-center gap-1 py-3 text-sm font-extrabold text-primary">
-        View All
-        <ChevronDown className="size-4" aria-hidden="true" />
-      </button>
     </Card>
   );
 }
@@ -490,22 +490,23 @@ function TrustBenefitsCard() {
 }
 
 function AboutPropertyCard({ hostel }: { hostel: Hostel }) {
+  const [expanded, setExpanded] = useState(false);
   return (
     <Card className="mt-3" padded={false}>
       <h2 className="px-4 py-4 text-lg font-extrabold sm:px-5">About the Property</h2>
       <div className="border-t border-border px-4 py-4 sm:px-5">
-        <div className="relative max-h-28 overflow-hidden">
+        <div className={`relative overflow-hidden ${expanded ? "" : "max-h-28"}`}>
           <p className="text-pretty text-[13px] leading-6 text-[#374151]">
             <strong className="font-extrabold text-[#111827]">{hostel.name}</strong>, located near UCC Science Gate,
             offers comfortable student rooms for students who want <strong className="font-extrabold text-[#111827]">safety</strong>,
             convenience and easy access to campus. Students can compare room type, commute, bills, manager status and
             availability before calling.
           </p>
-          <div className="absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-white to-white/0" />
+          {!expanded ? <div className="absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-white to-white/0" /> : null}
         </div>
-        <button type="button" className="mt-2 inline-flex items-center gap-1 text-sm font-extrabold text-primary">
-          Show more
-          <ChevronRight className="size-4" aria-hidden="true" />
+        <button type="button" onClick={() => setExpanded((value) => !value)} aria-expanded={expanded} className="mt-2 inline-flex items-center gap-1 text-sm font-extrabold text-primary">
+          {expanded ? "Show less" : "Show more"}
+          <ChevronDown className={`size-4 ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
         </button>
       </div>
     </Card>
@@ -513,6 +514,7 @@ function AboutPropertyCard({ hostel }: { hostel: Hostel }) {
 }
 
 function AmenitiesCard() {
+  const [showAll, setShowAll] = useState(false);
   const bills = [
     ["Wi-Fi", "GHS 80/mo", Wifi],
     ["Electricity", "GHS 120/mo", Zap],
@@ -575,7 +577,7 @@ function AmenitiesCard() {
 
         <h3 className="text-base font-extrabold">Shared Community and Utilities</h3>
         <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-4">
-          {shared.map(([label, Icon]) => (
+          {(showAll ? shared : shared.slice(0, 4)).map(([label, Icon]) => (
             <div key={label as string} className="flex items-center gap-2.5">
               <Icon className="size-6 shrink-0 text-[#172554]" aria-hidden="true" />
               <p className="text-[13px] font-medium">{label as string}</p>
@@ -585,7 +587,7 @@ function AmenitiesCard() {
 
       </div>
 
-      <div className="border-t border-border px-4 py-4 sm:px-5">
+      {showAll ? <div className="border-t border-border px-4 py-4 sm:px-5">
           <h3 className="text-base font-extrabold">Fitness and Recreation</h3>
           <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-4">
             {recreation.map(([label, Icon]) => (
@@ -595,12 +597,12 @@ function AmenitiesCard() {
               </div>
             ))}
           </div>
-      </div>
+      </div> : null}
 
       <div className="border-t border-border">
-        <button type="button" className="mx-auto flex items-center gap-1 py-3.5 text-sm font-extrabold text-primary">
-          View all amenities (22)
-          <ChevronDown className="size-4" aria-hidden="true" />
+        <button type="button" onClick={() => setShowAll((value) => !value)} aria-expanded={showAll} className="mx-auto flex items-center gap-1 py-3.5 text-sm font-extrabold text-primary">
+          {showAll ? "Show fewer amenities" : "View all amenities (22)"}
+          <ChevronDown className={`size-4 ${showAll ? "rotate-180" : ""}`} aria-hidden="true" />
         </button>
       </div>
     </Card>
@@ -609,6 +611,9 @@ function AmenitiesCard() {
 
 function RoomTypesCard({ hostel }: { hostel: Hostel }) {
   const [showSoldOutRooms, setShowSoldOutRooms] = useState(true);
+  const [showInfo, setShowInfo] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All (4)");
   const filters = ["Stay Duration", "Move-in Month", "Room Type", "Occupancy"];
   const categories = ["All (4)", "Two in a Room", "Single Room", "Self-contained"];
   const roomTypes: RoomTypeData[] = [
@@ -688,21 +693,30 @@ function RoomTypesCard({ hostel }: { hostel: Hostel }) {
     tenancies: [],
     moreCount: 3,
   };
+  const visibleRooms = roomTypes.filter((room) => {
+    if (activeCategory === "All (4)") return true;
+    if (activeCategory === "Two in a Room") return room.title.toLowerCase().includes("two");
+    if (activeCategory === "Single Room") return room.title.toLowerCase().includes("single");
+    return room.title.toLowerCase().includes("self");
+  });
 
   return (
     <Card className="mt-3 overflow-hidden" padded={false}>
       <div className="flex items-center justify-between gap-3 px-4 py-4 sm:px-5">
         <h2 className="text-lg font-extrabold">Room Types (4)</h2>
-        <button type="button" className="grid size-8 place-items-center rounded-full border border-border" aria-label="Room type information">
+        <button type="button" onClick={() => setShowInfo((value) => !value)} aria-expanded={showInfo} className="grid size-8 place-items-center rounded-full border border-border" aria-label="Room type information">
           <Info className="size-4" aria-hidden="true" />
         </button>
       </div>
+      {showInfo ? <p className="border-t border-border bg-secondary px-4 py-3 text-xs leading-5 text-muted-foreground sm:px-5">Availability and prices are enquiry-ready demo data. Confirm the final room and tenancy with the hostel manager before paying.</p> : null}
       <div className="no-scrollbar flex gap-2 overflow-x-auto border-t border-border px-4 py-3 sm:px-5">
         {filters.map((filter) => (
           <button
             key={filter}
             type="button"
-            className="h-8 shrink-0 rounded-full border border-border bg-white px-3 text-xs font-semibold text-[#222222]"
+            onClick={() => setActiveFilter((value) => value === filter ? "" : filter)}
+            aria-pressed={activeFilter === filter}
+            className={`h-8 shrink-0 rounded-full border px-3 text-xs font-semibold ${activeFilter === filter ? "border-primary bg-[#FFF0F5] text-primary" : "border-border bg-white text-[#222222]"}`}
           >
             {filter}
           </button>
@@ -710,12 +724,14 @@ function RoomTypesCard({ hostel }: { hostel: Hostel }) {
       </div>
 
       <div className="no-scrollbar flex overflow-x-auto border-t border-border bg-white px-4 sm:px-5">
-        {categories.map((category, index) => (
+        {categories.map((category) => (
           <button
             key={category}
             type="button"
+            onClick={() => setActiveCategory(category)}
+            aria-pressed={activeCategory === category}
             className={`h-12 shrink-0 border-b-2 px-4 text-sm font-bold ${
-              index === 0 ? "border-primary text-primary" : "border-transparent text-[#374151]"
+              activeCategory === category ? "border-primary text-primary" : "border-transparent text-[#374151]"
             }`}
           >
             {category}
@@ -724,10 +740,11 @@ function RoomTypesCard({ hostel }: { hostel: Hostel }) {
       </div>
 
       <div className="space-y-3 px-3 py-3 sm:px-5">
-        {roomTypes.map((room) => (
-          <RoomTypeCard key={room.title} room={room} />
+        {visibleRooms.map((room) => (
+          <RoomTypeCard key={room.title} room={room} hostelSlug={hostel.slug} />
         ))}
-        {showSoldOutRooms ? <SoldOutRoomTypeCard room={soldOutRoom} /> : null}
+        {visibleRooms.length === 0 ? <p className="rounded-xl border border-dashed border-border bg-white p-5 text-center text-sm text-muted-foreground">No rooms match this category yet. Send an enquiry and we will help confirm alternatives.</p> : null}
+        {showSoldOutRooms && (activeCategory === "All (4)" || activeCategory === "Two in a Room") ? <SoldOutRoomTypeCard room={soldOutRoom} hostelSlug={hostel.slug} /> : null}
         <ViewSoldOutRoomsBar
           count={1}
           expanded={showSoldOutRooms}
@@ -740,21 +757,24 @@ function RoomTypesCard({ hostel }: { hostel: Hostel }) {
 
 function RoomTypeCard({
   room,
+  hostelSlug,
 }: {
   room: RoomTypeData;
+  hostelSlug: string;
 }) {
+  const [showMore, setShowMore] = useState(false);
   return (
     <article className="overflow-hidden rounded-[1.05rem] border border-border bg-white">
       <div className="p-4 sm:p-5">
         <h3 className="text-balance text-lg font-extrabold leading-6">{room.title}</h3>
         <RoomImagePreview title={room.title} images={room.images} />
         <RoomAvailabilityPriceRow availableFrom={room.availableFrom} price={room.price} />
-        <RoomFeatureGrid features={room.features} />
+        <RoomFeatureGrid features={room.features} detailsHref={`/request/${hostelSlug}?room=${encodeURIComponent(room.title)}`} />
       </div>
-      <TenancyOptionList tenancies={room.tenancies} />
-      <button type="button" className="mx-auto flex items-center gap-1 py-3.5 text-sm font-extrabold text-primary">
-        View More Tenancies ({room.moreCount})
-        <ChevronDown className="size-4" aria-hidden="true" />
+      <TenancyOptionList tenancies={showMore ? [...room.tenancies, ...room.tenancies.slice(0, 1)] : room.tenancies} hostelSlug={hostelSlug} />
+      <button type="button" onClick={() => setShowMore((current) => !current)} aria-expanded={showMore} className="mx-auto flex items-center gap-1 py-3.5 text-sm font-extrabold text-primary">
+        {showMore ? "Show fewer tenancies" : `View More Tenancies (${room.moreCount})`}
+        <ChevronDown className={`size-4 ${showMore ? "rotate-180" : ""}`} aria-hidden="true" />
       </button>
     </article>
   );
@@ -788,16 +808,16 @@ function RoomImagePreview({ title, images }: { title: string; images: string[] }
   );
 }
 
-function SoldOutRoomTypeCard({ room }: { room: RoomTypeData }) {
+function SoldOutRoomTypeCard({ room, hostelSlug }: { room: RoomTypeData; hostelSlug: string }) {
   return (
     <article className="overflow-hidden rounded-[1.05rem] border border-border bg-white">
       <div className="p-4 sm:p-5">
         <h3 className="text-balance text-lg font-extrabold leading-6">{room.title}</h3>
         <SoldOutRoomImagePreview title={room.title} images={room.images} />
         <SoldOutStatusRow price={room.price} />
-        <RoomFeatureGrid features={room.features} />
+        <RoomFeatureGrid features={room.features} detailsHref={`/request/${hostelSlug}?room=${encodeURIComponent(room.title)}&waitlist=true`} />
       </div>
-      <SoldOutWaitlistRow />
+      <SoldOutWaitlistRow hostelSlug={hostelSlug} />
     </article>
   );
 }
@@ -842,16 +862,16 @@ function SoldOutStatusRow({ price }: { price: string }) {
   );
 }
 
-function SoldOutWaitlistRow() {
+function SoldOutWaitlistRow({ hostelSlug }: { hostelSlug: string }) {
   return (
     <div className="flex items-center justify-between gap-3 border-t border-border px-4 py-3.5 sm:px-5">
       <p className="min-w-0 text-[13px] font-semibold text-[#374151]">Looking for different dates?</p>
-      <button
-        type="button"
-        className="h-9 shrink-0 rounded-xl border border-primary bg-white px-4 text-xs font-extrabold text-primary"
+      <Link
+        href={`/request/${hostelSlug}?waitlist=true`}
+        className="inline-flex h-9 shrink-0 items-center rounded-xl border border-primary bg-white px-4 text-xs font-extrabold text-primary"
       >
         Join Waitlist
-      </button>
+      </Link>
     </div>
   );
 }
@@ -894,7 +914,7 @@ function RoomAvailabilityPriceRow({ availableFrom, price }: { availableFrom: str
   );
 }
 
-function RoomFeatureGrid({ features }: { features: RoomFeature[] }) {
+function RoomFeatureGrid({ features, detailsHref }: { features: RoomFeature[]; detailsHref: string }) {
   return (
     <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3">
       {features.map(([label, Icon]) => (
@@ -903,16 +923,17 @@ function RoomFeatureGrid({ features }: { features: RoomFeature[] }) {
           <p className="text-[13px] font-semibold">{label}</p>
         </div>
       ))}
-      <button type="button" className="col-span-2 inline-flex items-center gap-1 text-left text-sm font-extrabold text-primary sm:col-span-1">
+      <Link href={detailsHref} className="col-span-2 inline-flex items-center gap-1 text-left text-sm font-extrabold text-primary sm:col-span-1">
         View More Details
         <ChevronRight className="size-4" aria-hidden="true" />
-      </button>
+      </Link>
     </div>
   );
 }
 
 function TenancyOptionList({
   tenancies,
+  hostelSlug,
 }: {
   tenancies: Array<{
     duration: string;
@@ -921,11 +942,12 @@ function TenancyOptionList({
     note: string;
     price: string;
   }>;
+  hostelSlug: string;
 }) {
   return (
     <div className="divide-y divide-border border-y border-border">
-      {tenancies.map((tenancy) => (
-        <TenancyOptionRow key={`${tenancy.duration}-${tenancy.moveIn}`} tenancy={tenancy} />
+      {tenancies.map((tenancy, index) => (
+        <TenancyOptionRow key={`${tenancy.duration}-${tenancy.moveIn}-${tenancy.moveOut}-${index}`} tenancy={tenancy} hostelSlug={hostelSlug} />
       ))}
     </div>
   );
@@ -933,6 +955,7 @@ function TenancyOptionList({
 
 function TenancyOptionRow({
   tenancy,
+  hostelSlug,
 }: {
   tenancy: {
     duration: string;
@@ -941,6 +964,7 @@ function TenancyOptionRow({
     note: string;
     price: string;
   };
+  hostelSlug: string;
 }) {
   return (
     <div className="p-4 sm:p-5">
@@ -958,9 +982,9 @@ function TenancyOptionRow({
         </div>
         <div className="shrink-0 text-right">
           <p className="text-sm font-extrabold">{tenancy.price}</p>
-          <button type="button" className="mt-3 h-9 min-w-24 rounded-xl bg-primary px-5 text-xs font-extrabold text-white">
+          <Link href={`/request/${hostelSlug}?room=${encodeURIComponent(tenancy.duration)}`} className="mt-3 inline-flex h-9 min-w-24 items-center justify-center rounded-xl bg-primary px-5 text-xs font-extrabold text-white">
             Book
-          </button>
+          </Link>
         </div>
       </div>
       <p className="mt-3 rounded-lg bg-secondary px-3 py-2 text-xs font-medium text-muted-foreground">Note: {tenancy.note}</p>
@@ -1063,15 +1087,16 @@ function HouseRuleItem({
   icon?: LucideIcon;
   separated?: boolean;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const content = (
     <>
       {Icon ? <Icon className="mt-1 size-6 shrink-0 text-[#172554]" aria-hidden="true" /> : null}
       <div className="min-w-0 flex-1">
         <h4 className="text-[13px] font-medium leading-5 text-[#111827]">{title}</h4>
-        <p className="mt-1 line-clamp-1 text-[13px] leading-5 text-muted-foreground">{description}</p>
-        <button type="button" className="mt-1.5 inline-flex items-center gap-1 text-sm font-medium text-[#111827]">
-          View more
-          <ChevronRight className="size-4" aria-hidden="true" />
+        <p className={`mt-1 text-[13px] leading-5 text-muted-foreground ${expanded ? "" : "line-clamp-1"}`}>{description}</p>
+        <button type="button" onClick={() => setExpanded((value) => !value)} aria-expanded={expanded} className="mt-1.5 inline-flex items-center gap-1 text-sm font-medium text-[#111827]">
+          {expanded ? "View less" : "View more"}
+          <ChevronDown className={`size-4 ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
         </button>
       </div>
     </>
@@ -1211,16 +1236,17 @@ function PaymentFeeItem({
   icon: LucideIcon;
   methods?: string[];
 }) {
+  const [expanded, setExpanded] = useState(false);
   return (
     <div className="flex items-start gap-3 py-4">
       <Icon className="mt-1 size-6 shrink-0 text-[#172554]" aria-hidden="true" />
       <div className="min-w-0 flex-1">
         <h3 className="text-[13px] font-extrabold leading-5 text-[#111827]">{title}</h3>
-        <p className="mt-1 line-clamp-1 text-[13px] leading-5 text-muted-foreground">{description}</p>
+        <p className={`mt-1 text-[13px] leading-5 text-muted-foreground ${expanded ? "" : "line-clamp-1"}`}>{description}</p>
         {methods ? <PaymentMethodBadges methods={methods} /> : null}
-        <button type="button" className="mt-1.5 inline-flex items-center gap-1 text-sm font-extrabold text-[#111827]">
-          View more
-          <ChevronRight className="size-4" aria-hidden="true" />
+        <button type="button" onClick={() => setExpanded((value) => !value)} aria-expanded={expanded} className="mt-1.5 inline-flex items-center gap-1 text-sm font-extrabold text-[#111827]">
+          {expanded ? "View less" : "View more"}
+          <ChevronDown className={`size-4 ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -1244,6 +1270,7 @@ function PaymentMethodBadges({ methods }: { methods: string[] }) {
 
 function FAQCard() {
   const [openQuestion, setOpenQuestion] = useState("What bills are included in the rent?");
+  const [query, setQuery] = useState("");
   const questions = [
     {
       question: "What bills are included in the rent?",
@@ -1276,24 +1303,26 @@ function FAQCard() {
     <Card className="mt-3" padded={false}>
       <h2 className="px-4 py-4 text-lg font-extrabold sm:px-5">Frequently Asked Questions</h2>
       <div className="border-t border-border px-4 py-4 sm:px-5">
-        <FAQSearchBar />
+        <FAQSearchBar value={query} onChange={setQuery} />
       </div>
-      <FAQAccordion questions={questions} openQuestion={openQuestion} onOpenChange={setOpenQuestion} />
-      <button type="button" className="mx-auto flex items-center gap-1 py-3.5 text-sm font-extrabold text-primary">
-        View All Questions (73)
-        <ChevronDown className="size-4" aria-hidden="true" />
-      </button>
+      <FAQAccordion questions={questions.filter((item) => `${item.question} ${item.answer}`.toLowerCase().includes(query.toLowerCase()))} openQuestion={openQuestion} onOpenChange={setOpenQuestion} />
+      <Link href="/support?topic=hostel-questions" className="mx-auto flex items-center justify-center gap-1 py-3.5 text-sm font-extrabold text-primary">
+        Ask another question
+        <ChevronRight className="size-4" aria-hidden="true" />
+      </Link>
     </Card>
   );
 }
 
-function FAQSearchBar() {
+function FAQSearchBar({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   return (
     <label className="flex h-12 items-center gap-3 rounded-full border border-border bg-white px-4">
       <Search className="size-5 shrink-0 text-[#111827]" aria-hidden="true" />
       <span className="sr-only">Search questions about this hostel</span>
       <input
         type="search"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
         placeholder="Search questions about this hostel"
         className="min-w-0 flex-1 bg-transparent text-sm font-medium text-[#111827] outline-none placeholder:text-[#9CA3AF]"
       />
@@ -1345,26 +1374,28 @@ function FAQAccordionItem({
 }
 
 function NearbyLocationsMapCard() {
-  const places = [
-    ["University of Cape Coast", "0.3 km"],
-    ["UCC Science Market", "0.6 km"],
-    ["Ayensu Junction", "0.8 km"],
-    ["UCC Main Gate", "1.1 km"],
-    ["Kotokuraba Station", "2.4 km"],
-  ];
+  const [unit, setUnit] = useState<"mi" | "km">("km");
+  const [category, setCategory] = useState("Universities");
+  const [showAll, setShowAll] = useState(false);
+  const nearbyPlaces: Record<string, Array<[string, number]>> = {
+    Universities: [["University of Cape Coast", 0.3], ["Cape Coast Technical University", 4.2], ["UCC School of Medical Sciences", 1.4], ["UCC College of Distance Education", 1.8]],
+    "Bus Stations": [["UCC Science Shuttle Stop", 0.4], ["Ayensu Junction", 0.8], ["Kotokuraba Station", 2.4], ["Pedu Junction", 3.1]],
+    "Taxi Points": [["UCC Main Gate Taxi Rank", 1.1], ["Science Market Taxi Point", 0.6], ["Amamoma Junction", 1.7], ["Cape Coast Station", 3.4]],
+  };
+  const places = nearbyPlaces[category].map(([name, distance]) => [name, unit === "km" ? `${distance.toFixed(1)} km` : `${(distance * 0.621371).toFixed(1)} mi`]);
 
   return (
     <Card className="mt-3 overflow-hidden" padded={false}>
       <h2 className="px-4 py-4 text-lg font-extrabold sm:px-5">Nearby Locations and Map</h2>
       <div className="border-t border-border px-4 py-4 sm:px-5">
         <PropertyMapPreview />
-        <DistanceUnitToggle />
+        <DistanceUnitToggle value={unit} onChange={setUnit} />
       </div>
-      <NearbyCategoryTabs />
-      <NearbyPlaceList places={places} />
-      <button type="button" className="mx-auto flex items-center gap-1 py-3.5 text-sm font-extrabold text-primary">
-        View More Nearby Places
-        <ChevronRight className="size-4" aria-hidden="true" />
+      <NearbyCategoryTabs active={category} onChange={setCategory} />
+      <NearbyPlaceList places={showAll ? places : places.slice(0, 3)} />
+      <button type="button" onClick={() => setShowAll((value) => !value)} aria-expanded={showAll} className="mx-auto flex items-center gap-1 py-3.5 text-sm font-extrabold text-primary">
+        {showAll ? "Show fewer nearby places" : "View More Nearby Places"}
+        <ChevronDown className={`size-4 ${showAll ? "rotate-180" : ""}`} aria-hidden="true" />
       </button>
     </Card>
   );
@@ -1389,15 +1420,15 @@ function PropertyMapPreview() {
       </div>
 
       <div className="absolute left-3 top-1/2 z-10 -translate-y-1/2 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
-        <button type="button" className="grid size-9 place-items-center border-b border-border" aria-label="Zoom in">
+        <Link href="/map?q=UCC" className="grid size-9 place-items-center border-b border-border" aria-label="Open map and zoom in">
           <span className="text-xl font-extrabold leading-none">+</span>
-        </button>
-        <button type="button" className="grid size-9 place-items-center border-b border-border" aria-label="Zoom out">
+        </Link>
+        <Link href="/map?q=UCC" className="grid size-9 place-items-center border-b border-border" aria-label="Open map and zoom out">
           <span className="text-xl font-extrabold leading-none">-</span>
-        </button>
-        <button type="button" className="grid size-9 place-items-center" aria-label="Use current location">
+        </Link>
+        <Link href="/map?q=near%20me" className="grid size-9 place-items-center" aria-label="Open map near current location">
           <Navigation className="size-4" aria-hidden="true" />
-        </button>
+        </Link>
       </div>
 
       <MapMarker left="50%" top="49%" label="Hostel" active icon={Home} />
@@ -1437,29 +1468,29 @@ function MapMarker({
 
 function MapExploreButton() {
   return (
-    <button
-      type="button"
+    <Link
+      href="/map?q=UCC"
       className="absolute bottom-5 right-4 z-10 rounded-xl bg-white px-4 py-2 text-sm font-extrabold text-primary shadow-sm"
     >
       Explore
-    </button>
+    </Link>
   );
 }
 
-function DistanceUnitToggle() {
+function DistanceUnitToggle({ value, onChange }: { value: "mi" | "km"; onChange: (value: "mi" | "km") => void }) {
   return (
     <div className="mt-3 grid grid-cols-2 rounded-lg bg-[#F3F4F6] p-1">
-      <button type="button" className="h-10 rounded-md text-sm font-extrabold text-[#374151]">
+      <button type="button" onClick={() => onChange("mi")} aria-pressed={value === "mi"} className={`h-10 rounded-md text-sm font-extrabold ${value === "mi" ? "bg-white text-[#111827] shadow-sm" : "text-[#374151]"}`}>
         Miles
       </button>
-      <button type="button" className="h-10 rounded-md bg-white text-sm font-extrabold text-[#111827] shadow-sm">
+      <button type="button" onClick={() => onChange("km")} aria-pressed={value === "km"} className={`h-10 rounded-md text-sm font-extrabold ${value === "km" ? "bg-white text-[#111827] shadow-sm" : "text-[#374151]"}`}>
         Kilometers
       </button>
     </div>
   );
 }
 
-function NearbyCategoryTabs() {
+function NearbyCategoryTabs({ active, onChange }: { active: string; onChange: (value: string) => void }) {
   const categories = [
     ["Universities", GraduationCap],
     ["Bus Stations", BusFront],
@@ -1468,12 +1499,14 @@ function NearbyCategoryTabs() {
 
   return (
     <div className="no-scrollbar flex overflow-x-auto border-y border-border px-4 sm:px-5">
-      {categories.map(([label, Icon], index) => (
+      {categories.map(([label, Icon]) => (
         <button
           key={label}
           type="button"
+          onClick={() => onChange(label)}
+          aria-pressed={active === label}
           className={`flex h-12 shrink-0 items-center gap-2 border-b-2 px-3 text-sm font-extrabold ${
-            index === 0 ? "border-primary text-primary" : "border-transparent text-[#374151]"
+            active === label ? "border-primary text-primary" : "border-transparent text-[#374151]"
           }`}
         >
           <Icon className="size-5" aria-hidden="true" />
@@ -1503,7 +1536,7 @@ function NearbyPlaceRow({ name, distance }: { name: string; distance: string }) 
   );
 }
 
-function LiveTourCard() {
+function LiveTourCard({ hostelSlug }: { hostelSlug: string }) {
   return (
     <Card className="relative mt-3 overflow-hidden" padded={false}>
       <div className="pointer-events-none absolute -right-10 -top-12 size-36 rounded-full bg-[#FFF0F5]" />
@@ -1517,16 +1550,16 @@ function LiveTourCard() {
             Interested in this <span className="text-primary">hostel?</span>
           </h2>
           <p className="mt-1 text-[13px] font-medium text-muted-foreground">Request a room tour today.</p>
-          <button type="button" className="mt-3 h-9 rounded-xl border border-primary bg-white px-5 text-xs font-extrabold text-primary">
+          <Link href={`/request/${hostelSlug}?topic=room-tour`} className="mt-3 inline-flex h-9 items-center rounded-xl border border-primary bg-white px-5 text-xs font-extrabold text-primary">
             Request now
-          </button>
+          </Link>
         </div>
       </div>
     </Card>
   );
 }
 
-function ReviewsCard() {
+function ReviewsCard({ hostel }: { hostel: Hostel }) {
   const scores = [
     ["Location", "4.5", MapPin],
     ["Cleanliness", "4.3", CheckCircle2],
@@ -1586,10 +1619,10 @@ function ReviewsCard() {
         <ReviewPhotoStrip photos={reviewPhotos} />
         <ReviewCardCarousel reviews={reviews} />
       </div>
-      <button type="button" className="mx-auto flex items-center gap-1 py-3.5 text-sm font-extrabold text-primary">
+      <Link href={`/hostels/${hostel.slug}/reviews`} className="mx-auto flex items-center justify-center gap-1 py-3.5 text-sm font-extrabold text-primary">
         Read All Reviews
         <ChevronRight className="size-4" aria-hidden="true" />
-      </button>
+      </Link>
     </Card>
   );
 }
@@ -1676,16 +1709,20 @@ function ReviewScoreRow({ label, score, icon: Icon }: { label: string; score: st
 }
 
 function PriceTrendCard() {
+  const [roomType, setRoomType] = useState("All Room Types");
   return (
     <Card className="mb-3 mt-3" padded={false}>
       <h2 className="px-4 py-4 text-lg font-extrabold sm:px-5">Price Trend</h2>
       <div className="border-t border-border px-4 py-4 sm:px-5">
         <div className="flex items-center gap-3">
-          <button type="button" className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-white px-4 text-sm font-bold text-[#374151]">
-            All Room Types
-            <ChevronDown className="size-4" aria-hidden="true" />
-          </button>
-          <button type="button" className="h-10 px-2 text-sm font-bold text-[#9CA3AF]">
+          <label className="sr-only" htmlFor="price-room-type">Room type</label>
+          <select id="price-room-type" value={roomType} onChange={(event) => setRoomType(event.target.value)} className="h-10 rounded-full border border-border bg-white px-4 text-sm font-bold text-[#374151]">
+            <option>All Room Types</option>
+            <option>Two in a Room</option>
+            <option>Single Room</option>
+            <option>Self-contained</option>
+          </select>
+          <button type="button" onClick={() => setRoomType("All Room Types")} disabled={roomType === "All Room Types"} className="h-10 px-2 text-sm font-bold text-[#6B7280] disabled:text-[#C1C6CE]">
             Reset
           </button>
         </div>
@@ -1779,6 +1816,7 @@ function PriceTrendChart() {
 }
 
 type MiniProperty = {
+  slug: string;
   name: string;
   location: string;
   price: string;
@@ -1830,22 +1868,22 @@ function MiniPropertyCard({ property }: { property: MiniProperty }) {
   return (
     <article className="w-[calc(100%-0.5rem)] shrink-0 overflow-hidden rounded-xl border border-border bg-white sm:w-72">
       <div className="relative aspect-[1.18] bg-secondary">
-        <Image src={property.image} alt={`${property.name} room preview`} fill sizes="18rem" className="object-cover" />
-        {property.badge ? (
-          <span className="absolute left-3 top-3 rounded-full bg-[#FFF0F5] px-3 py-1 text-xs font-extrabold text-primary shadow-sm">
-            {property.badge}
-          </span>
-        ) : null}
-        <button type="button" className="absolute right-2.5 top-2.5 grid size-8 place-items-center rounded-full bg-white shadow-sm" aria-label={`Save ${property.name}`}>
-          <Heart className="size-4" aria-hidden="true" />
-        </button>
-        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5" aria-hidden="true">
-          <span className="h-1.5 w-6 rounded-full bg-white" />
-          <span className="size-1.5 rounded-full bg-white" />
-          <span className="size-1.5 rounded-full bg-white" />
-        </div>
+        <Link href={`/hostels/${property.slug}`} className="absolute inset-0">
+          <Image src={property.image} alt={`${property.name} room preview`} fill sizes="18rem" className="object-cover" />
+          {property.badge ? (
+            <span className="absolute left-3 top-3 rounded-full bg-[#FFF0F5] px-3 py-1 text-xs font-extrabold text-primary shadow-sm">
+              {property.badge}
+            </span>
+          ) : null}
+          <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5" aria-hidden="true">
+            <span className="h-1.5 w-6 rounded-full bg-white" />
+            <span className="size-1.5 rounded-full bg-white" />
+            <span className="size-1.5 rounded-full bg-white" />
+          </div>
+        </Link>
+        <ListingSaveButton slug={property.slug} name={property.name} />
       </div>
-      <div className="p-3">
+      <Link href={`/hostels/${property.slug}`} className="block p-3">
         <h3 className="truncate text-base font-extrabold text-[#111827]">{property.name}</h3>
         <p className="mt-1 truncate text-[13px] font-medium text-muted-foreground">{property.location}</p>
         <div className="mt-4 flex items-center justify-between gap-2">
@@ -1859,36 +1897,22 @@ function MiniPropertyCard({ property }: { property: MiniProperty }) {
             </span>
           ) : null}
         </div>
-      </div>
+      </Link>
     </article>
   );
 }
 
 function makePropertyCards(hostel: Hostel, variant: "recent" | "similar" | "nearby" | "popular" | "budget"): MiniProperty[] {
-  const base = [
-    {
-      name: "Science View Residence",
-      location: "Science / New Site, Cape Coast",
-      price: "GHS 2,800",
-      image: hostel.gallery[0] ?? hostel.image,
-      rating: "4.8",
-    },
-    {
-      name: "Campus Gate Hostel",
-      location: "UCC Science, Cape Coast",
-      price: "GHS 3,200",
-      image: hostel.gallery[1] ?? hostel.image,
-      badge: "Student Choice",
-      rating: "4.7",
-    },
-    {
-      name: "Ayensu Court Hostel",
-      location: "Ayensu, Cape Coast",
-      price: "GHS 2,400",
-      image: hostel.gallery[2] ?? hostel.image,
-      rating: "4.6",
-    },
-  ];
+  const candidates = hostelCatalog.filter((item) => item.slug !== hostel.slug);
+  const base = [hostel, ...candidates].slice(0, 3).map((item) => ({
+    slug: item.slug,
+    name: item.name,
+    location: `${item.area}, ${item.city}`,
+    price: item.price.replace(/\/.*$/, ""),
+    image: item.image,
+    rating: item.rating,
+    badge: undefined,
+  } satisfies MiniProperty));
 
   if (variant === "popular") {
     return base.map((item, index) => ({ ...item, badge: index === 0 ? "Popular" : item.badge }));
@@ -1906,6 +1930,7 @@ function makePropertyCards(hostel: Hostel, variant: "recent" | "similar" | "near
 }
 
 function NearbyPlacesFooterCard() {
+  const [showAll, setShowAll] = useState(false);
   const links = [
     "Hostels in Cape Coast",
     "Hostels near UCC",
@@ -1922,33 +1947,37 @@ function NearbyPlacesFooterCard() {
       <h2 className="px-4 py-4 text-lg font-extrabold sm:px-5">Nearby Places</h2>
       <FooterLinkTabs />
       <div className="space-y-4 border-t border-border px-4 py-4 sm:px-5">
-        {links.map((link) => (
+        {(showAll ? links : links.slice(0, 4)).map((link) => (
           <Link key={link} href="/search/results?q=UCC" className="block text-[13px] font-medium text-[#374151] underline underline-offset-2">
             {link}
           </Link>
         ))}
       </div>
-      <button type="button" className="mx-auto flex items-center gap-1 border-t border-border py-3.5 text-sm font-extrabold text-primary">
-        Show More (11)
-        <ChevronDown className="size-4" aria-hidden="true" />
+      <button type="button" onClick={() => setShowAll((value) => !value)} aria-expanded={showAll} className="mx-auto flex items-center gap-1 border-t border-border py-3.5 text-sm font-extrabold text-primary">
+        {showAll ? "Show Less" : "Show More (4)"}
+        <ChevronDown className={`size-4 ${showAll ? "rotate-180" : ""}`} aria-hidden="true" />
       </button>
     </Card>
   );
 }
 
 function FooterLinkTabs() {
-  const tabs = ["Cities", "Areas", "Universities"];
+  const tabs = [
+    ["Cities", "/cities/cape-coast"],
+    ["Areas", "/search/results?q=Cape%20Coast"],
+    ["Universities", "/universities/ucc"],
+  ];
 
   return (
     <div className="flex gap-6 px-4 sm:px-5">
-      {tabs.map((tab, index) => (
-        <button
+      {tabs.map(([tab, href], index) => (
+        <Link
           key={tab}
-          type="button"
+          href={href}
           className={`h-12 border-b-2 text-sm font-extrabold ${index === 0 ? "border-primary text-primary" : "border-transparent text-[#111827]"}`}
         >
           {tab}
-        </button>
+        </Link>
       ))}
     </div>
   );
@@ -2018,7 +2047,7 @@ function FooterAccordion({ rows }: { rows: string[] }) {
             <div className="pb-4 text-sm font-medium leading-7 text-muted-foreground">
               <Link href="/search" className="block">Browse hostels</Link>
               <Link href="/search/results?q=UCC" className="block">UCC hostel guide</Link>
-              <Link href="/search/results?q=managers" className="block">For hostel managers</Link>
+              <Link href="/list-your-hostel" className="block">For hostel managers</Link>
             </div>
           ) : null}
         </div>
@@ -2039,9 +2068,9 @@ function StickyPropertyHeader({ hostel, visible }: { hostel: Hostel; visible: bo
           <ArrowLeft className="size-4" aria-hidden="true" />
         </Link>
         <p className="min-w-0 flex-1 truncate text-sm font-extrabold">{hostel.name}</p>
-        <HeroIconButton label="Search" icon={Search} compact />
-        <HeroIconButton label={`Save ${hostel.name}`} icon={Heart} compact />
-        <HeroIconButton label={`Share ${hostel.name}`} icon={Share2} compact />
+        <HeroIconButton label="Search" icon={Search} compact href="/search" />
+        <ListingSaveButton slug={hostel.slug} name={hostel.name} className="static grid size-8 place-items-center rounded-full border border-border bg-white" />
+        <HeroIconButton label={`Share ${hostel.name}`} icon={Share2} compact onClick={() => shareHostel(hostel)} />
       </div>
     </header>
   );
@@ -2093,10 +2122,12 @@ function StickyBookingBar({
   hidden,
   pastAvailabilitySection,
   onSeeAvailability,
+  hostelSlug,
 }: {
   hidden: boolean;
   pastAvailabilitySection: boolean;
   onSeeAvailability: () => void;
+  hostelSlug: string;
 }) {
   return (
     <div
@@ -2109,9 +2140,9 @@ function StickyBookingBar({
           pastAvailabilitySection ? "grid-cols-[3rem_minmax(0,1fr)]" : "grid-cols-[3rem_minmax(0,1fr)_minmax(0,1fr)]"
         }`}
       >
-        <button type="button" className="grid h-10 place-items-center rounded-xl border border-border" aria-label="Contact support">
+        <Link href="/support" className="grid h-10 place-items-center rounded-xl border border-border" aria-label="Contact support">
           <Headphones className="size-5" aria-hidden="true" />
-        </button>
+        </Link>
         {!pastAvailabilitySection ? (
           <button
             type="button"
@@ -2121,14 +2152,14 @@ function StickyBookingBar({
             See Availability
           </button>
         ) : null}
-        <button
-          type="button"
+        <Link
+          href={`/request/${hostelSlug}`}
           className={`h-10 rounded-xl text-xs font-extrabold ${
-            pastAvailabilitySection ? "bg-primary text-white" : "border border-primary bg-white text-primary"
+            pastAvailabilitySection ? "inline-flex items-center justify-center bg-primary text-white" : "inline-flex items-center justify-center border border-primary bg-white text-primary"
           }`}
         >
           Enquire Now
-        </button>
+        </Link>
       </div>
     </div>
   );
@@ -2136,8 +2167,8 @@ function StickyBookingBar({
 
 function FloatingSupportWidget({ hidden }: { hidden: boolean }) {
   return (
-    <button
-      type="button"
+    <Link
+      href="/support"
       className={`fixed bottom-24 right-3 z-30 grid size-12 place-items-center rounded-xl border border-primary bg-white shadow-lg transition-transform duration-200 ${
         hidden ? "translate-x-20 opacity-0" : "translate-x-0 opacity-100"
       }`}
@@ -2153,7 +2184,7 @@ function FloatingSupportWidget({ hidden }: { hidden: boolean }) {
         <span className="absolute left-0 top-1/2 h-1.5 w-3.5 -translate-y-1/2 rounded-full bg-white/80" />
         <span className="absolute right-0 top-1/2 h-1.5 w-3.5 -translate-y-1/2 rounded-full bg-white/80" />
       </span>
-    </button>
+    </Link>
   );
 }
 
@@ -2184,24 +2215,39 @@ function HeroIconButton({
   icon: Icon,
   compact = false,
   onClick,
+  href,
 }: {
   label: string;
   icon: LucideIcon;
   compact?: boolean;
   onClick?: () => void;
+  href?: string;
 }) {
+  const className = `grid place-items-center rounded-full bg-white text-[#111827] shadow-sm ${
+    compact ? "size-8 border border-border shadow-none" : "size-8 lg:size-9"
+  }`;
+  if (href) {
+    return <Link href={href} className={className} aria-label={label}><Icon className="size-4" aria-hidden="true" /></Link>;
+  }
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`grid place-items-center rounded-full bg-white text-[#111827] shadow-sm ${
-        compact ? "size-8 border border-border shadow-none" : "size-8 lg:size-9"
-      }`}
+      className={className}
       aria-label={label}
     >
       <Icon className="size-4" aria-hidden="true" />
     </button>
   );
+}
+
+async function shareHostel(hostel: Hostel) {
+  const url = window.location.href;
+  if (navigator.share) {
+    await navigator.share({ title: hostel.name, text: `View ${hostel.name} on Cobra`, url });
+    return;
+  }
+  await navigator.clipboard?.writeText(url);
 }
 
 function formatPrice(price: string) {

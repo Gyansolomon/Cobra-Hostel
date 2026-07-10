@@ -1,6 +1,6 @@
 # Session Handoff
 
-Last updated: 2026-06-07
+Last updated: 2026-07-09
 
 This handoff is for the next Codex agent continuing the Cobra / Hostel Premium project.
 
@@ -75,10 +75,10 @@ Branch:
 main
 ```
 
-Latest pushed commit at handoff time:
+Latest pushed commit before the 2026-07-09 MVP completion pass:
 
 ```text
-7f880cf Rename app folder for Vercel deploy
+d2e7a97 Wire routing and desktop layouts
 ```
 
 Deployment:
@@ -387,9 +387,41 @@ Left results column.
 Right sticky map panel or map + trust rail.
 ```
 
+## 2026-07-09 MVP Completion Pass
+
+The current app now includes working responsive flows for:
+
+```text
+Home discovery and city selection
+Search, filters, sorting, listing cards, and regional map results
+Twelve hostel detail routes with room, rules, fees, FAQs, reviews, and related properties
+City hubs for Cape Coast, Accra, Kumasi, and Takoradi
+University hubs for UCC, CCTU, UG, KNUST, and TTU
+Wishlist, recently viewed, enquiries, and booked empty states
+Login, signup, forgot password, two-step onboarding, and profile editing
+Student enquiry submission and manager listing submission
+Support, safety, how-it-works, terms, and privacy pages
+```
+
+Important implementation boundary:
+
+```text
+Authentication, profile, wishlist, and enquiry persistence are browser-local demo implementations.
+Passwords are never stored.
+Wishlist and enquiry data are scoped by signed-in email in the browser.
+No payments are collected.
+Production still requires the approved backend, authenticated sessions, database policies, email delivery, admin moderation, and real inventory verification.
+```
+
+The local production server is currently expected at:
+
+```text
+http://localhost:3000
+```
+
 ## Verification Status
 
-Recent checks passed after latest homepage changes:
+Checks passed after the 2026-07-09 MVP completion pass:
 
 ```text
 npm run lint
@@ -409,7 +441,9 @@ npm run build
 Result:
 
 ```text
-Build passed on 2026-06-07 after the folder rename to cobrazzz.
+Build passed on 2026-07-09 with 64 generated routes.
+Browser checks passed across 18 representative mobile routes and desktop home, listing, details, wishlist, city, university, map, auth, onboarding, support, manager submission, and enquiry flows.
+No browser console warnings or errors were present in the final verification pass.
 ```
 
 ## Cautions For Next Agent
