@@ -11,5 +11,5 @@ export default async function UniversityPage({ params }: { params: Promise<{ slu
   const university = getUniversity(slug);
   if (!university) notFound();
   const city = getCity(university.citySlug);
-  return <LocationHub kind="university" title={university.shortName} eyebrow={`${university.name} · ${university.campus}`} summary={university.summary} image={university.image} areas={university.popularAreas} transport={city?.transport || "Compare walking, shuttle, and local transport options before choosing a room."} priceGuide={city?.priceGuide || "Prices vary by occupancy, washroom type, amenities, and campus distance."} hostels={hostels.filter((hostel) => hostel.university === university.shortName)} searchTerm={university.shortName} />;
+  return <LocationHub kind="university" title={university.name} eyebrow={`${university.shortName} · ${university.campus}`} summary={university.summary} image={university.image} areas={university.popularAreas} transport={city?.transport || "Compare walking, shuttle, and local transport options before choosing a room."} priceGuide={city?.priceGuide || "Prices vary by occupancy, washroom type, amenities, and campus distance."} hostels={hostels.filter((hostel) => hostel.university === university.shortName)} searchTerm={university.shortName} />;
 }

@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/hostels/layout,_N_T_/hostels/[slug]/layout,_N_T_/hostels/[slug]/page,_N_T_/hostels/ayensu-court-rooms"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/hostels/$d$slug/__PAGE__",
+    "/hostels/$d$slug",
+    "/hostels",
+    "/_index",
+    "/_head"
+  ]
+}

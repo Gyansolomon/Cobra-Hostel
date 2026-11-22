@@ -85,8 +85,8 @@ export default function MyActivitiesScreen() {
   }, []);
 
   return (
-    <main className="min-h-dvh bg-white pb-20 text-[#111827] lg:bg-[#F7F7F7] lg:pb-0">
-      <div className="sticky top-0 z-20 border-b border-border bg-white/98 pt-4 lg:static lg:border-b-0 lg:bg-transparent lg:pt-8">
+    <main className="min-h-dvh bg-white pb-20 text-[#111827] lg:pb-0">
+      <div className="sticky top-0 z-20 border-b border-border bg-white pt-4 lg:static lg:pt-8">
         <div className="mx-auto max-w-[72rem] px-4 pb-3 lg:px-8 lg:pb-4">
           <h1 className="text-balance text-xl font-semibold leading-7 lg:text-3xl lg:leading-10">My Activities</h1>
         </div>
@@ -108,7 +108,7 @@ export default function MyActivitiesScreen() {
 
 function ActivityTabs({ activeTab, onChange }: { activeTab: ActivityTab; onChange: (tab: ActivityTab) => void }) {
   return (
-    <div className="relative bg-[#F4F5F7] lg:overflow-hidden lg:rounded-t-2xl lg:border-x lg:border-t lg:border-border">
+    <div className="relative bg-[#F7F7F7]">
       <div className="absolute inset-x-0 bottom-0 border-b border-border" />
       <div className="no-scrollbar flex overflow-x-auto px-0">
         {activityTabs.map((tab) => (
@@ -148,13 +148,13 @@ function ActivityEmptyState({ tab }: { tab: ActivityTab }) {
   const copy = emptyCopy[tab];
 
   return (
-    <section className="mx-auto flex min-h-[calc(100dvh-10.5rem)] max-w-sm flex-col items-center justify-center px-6 pb-10 text-center lg:mt-8 lg:min-h-[30rem] lg:max-w-[44rem] lg:rounded-2xl lg:border lg:border-border lg:bg-white lg:px-10 lg:shadow-sm">
+    <section className="mx-auto flex min-h-[calc(100dvh-10.5rem)] max-w-sm flex-col items-center justify-center px-6 pb-10 text-center lg:min-h-[34rem] lg:max-w-[44rem] lg:px-10">
       <EmptyActivityIllustration />
       <h2 className="mt-5 text-xl font-medium leading-7 text-[#374151] text-balance">Let&apos;s Get You Started</h2>
       <p className="mt-3 max-w-[19rem] text-sm font-medium leading-6 text-muted-foreground text-pretty">{copy.description}</p>
       <Link
         href={copy.href}
-        className="mt-7 inline-flex h-10 items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-sm"
+        className="mt-7 inline-flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-sm font-semibold text-white"
       >
         {copy.action}
       </Link>
@@ -191,7 +191,7 @@ function ActivityPropertyCard({ hostel, saved }: { hostel: Hostel; saved?: boole
   const detailsHref = `/hostels/${hostel.slug}`;
 
   return (
-    <article className="group overflow-hidden rounded-[0.95rem] border border-[#E5E7EB] bg-white shadow-sm sm:grid sm:grid-cols-[15rem_minmax(0,1fr)] sm:gap-4 sm:overflow-visible sm:rounded-none sm:border-x-0 sm:border-b sm:border-t-0 sm:pb-5 sm:shadow-none lg:rounded-[1.1rem] lg:border lg:p-3 lg:shadow-sm xl:grid-cols-[16rem_minmax(0,1fr)]">
+    <article className="group overflow-hidden rounded-lg border border-[#E5E7EB] bg-white sm:grid sm:grid-cols-[15rem_minmax(0,1fr)] sm:gap-4 sm:overflow-visible sm:rounded-none sm:border-x-0 sm:border-b sm:border-t-0 sm:pb-5 lg:rounded-lg lg:border lg:p-3 xl:grid-cols-[16rem_minmax(0,1fr)]">
       <ActivityPropertyImage hostel={hostel} saved={saved} href={detailsHref} />
 
       <div className="relative min-w-0 px-4 pb-4 pt-4 sm:px-0 sm:pb-0 sm:pt-0 lg:pr-1">
@@ -259,7 +259,7 @@ function ActivityPropertyImage({ hostel, saved, href }: { hostel: Hostel; saved?
     <div className="relative">
       <Link
         href={href}
-        className="relative block aspect-[1.55/1] overflow-hidden rounded-t-[0.95rem] bg-secondary sm:aspect-[1.08/1] sm:rounded-[1.1rem]"
+        className="relative block aspect-[1.55/1] overflow-hidden rounded-t-lg bg-secondary sm:aspect-[1.08/1] sm:rounded-lg"
         aria-label={`View details for ${hostel.name}`}
       >
         <Image
@@ -271,7 +271,7 @@ function ActivityPropertyImage({ hostel, saved, href }: { hostel: Hostel; saved?
           priority={hostel.slug === "science-view-residence"}
         />
         <span className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/55 to-transparent" />
-        <span className="absolute left-3 top-3 rounded-full bg-[#FFF0F5]/95 px-3 py-1.5 text-[11px] font-medium text-primary shadow-sm sm:px-3 sm:py-1 sm:text-[11px]">
+        <span className="absolute left-3 top-3 rounded-full bg-[#FFF0F5]/95 px-3 py-1.5 text-[11px] font-medium text-primary sm:px-3 sm:py-1 sm:text-[11px]">
           {hostel.offer.includes("Save") ? hostel.offer : "Save up to GHS 250"}
         </span>
         <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2" aria-hidden="true">
@@ -295,7 +295,7 @@ function ActivityPropertyImage({ hostel, saved, href }: { hostel: Hostel; saved?
           writeWishlist(user.email, next);
           setIsSaved(next.includes(hostel.slug));
         }}
-        className={`absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full bg-white/95 shadow-sm transition-colors hover:bg-white ${
+        className={`absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full border border-border bg-white/95 transition-colors hover:bg-white ${
           isSaved ? "text-primary" : "text-[#1F2329]"
         }`}
         aria-label={isSaved ? `Remove ${hostel.name} from wishlist` : `Save ${hostel.name}`}
@@ -353,7 +353,7 @@ function ActivityBottomActionRow({ hostel, href }: { hostel: Hostel; href: strin
       </div>
       <Link
         href={`${href}#roomTypes`}
-        className="inline-flex h-9 min-w-[8.75rem] shrink-0 items-center justify-center rounded-xl bg-primary px-3 text-[12px] font-semibold leading-none text-white shadow-sm active:scale-[0.98] sm:h-11 sm:min-w-[10rem] sm:px-5 sm:text-sm"
+        className="inline-flex h-9 min-w-[8.75rem] shrink-0 items-center justify-center rounded-lg bg-primary px-3 text-[12px] font-semibold leading-none text-white active:scale-[0.98] sm:h-11 sm:min-w-[10rem] sm:px-5 sm:text-sm"
       >
         See Availability
       </Link>
@@ -370,7 +370,7 @@ function BottomNavigation() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-white px-3 pb-[calc(env(safe-area-inset-bottom)+0.4rem)] pt-2 shadow-sm lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-white px-3 pb-[calc(env(safe-area-inset-bottom)+0.4rem)] pt-2 lg:hidden"
       aria-label="Bottom navigation"
     >
       <ul className="mx-auto grid w-full max-w-44 grid-cols-3 text-[11px] font-semibold text-muted-foreground">

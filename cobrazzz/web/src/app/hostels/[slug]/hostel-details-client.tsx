@@ -11,6 +11,7 @@ import {
   BusFront,
   CalendarDays,
   CheckCircle2,
+  ChevronLeft,
   ChevronDown,
   ChevronRight,
   ClipboardList,
@@ -40,6 +41,7 @@ import {
   Utensils,
   WashingMachine,
   Wifi,
+  X,
   Zap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -157,7 +159,7 @@ export function HostelDetailsClient({ hostel }: { hostel: Hostel }) {
     });
   }, [activeTab]);
 
-  const images = useMemo(() => [...hostel.gallery, hostel.image].slice(0, 4), [hostel.gallery, hostel.image]);
+  const images = useMemo(() => Array.from(new Set([...hostel.gallery, hostel.image])), [hostel.gallery, hostel.image]);
   const pastAvailabilitySection = [
     "roomTypes",
     "houseRules",
@@ -249,53 +251,77 @@ export function HostelDetailsClient({ hostel }: { hostel: Hostel }) {
 }
 
 function PropertyHeroGallery({ hostel, images }: { hostel: Hostel; images: string[] }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const activeImage = images[activeIndex] ?? hostel.image;
+
+  useEffect(() => {
+    if (!viewerOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setViewerOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [viewerOpen]);
+
+  const showPrevious = () => setActiveIndex((current) => (current - 1 + images.length) % images.length);
+  const showNext = () => setActiveIndex((current) => (current + 1) % images.length);
+
   return (
-    <section className="relative h-[25.5rem] overflow-hidden bg-secondary sm:h-[32rem] lg:mx-auto lg:mt-5 lg:h-[34rem] lg:max-w-[72rem] lg:rounded-[1.25rem]">
-      <Image
-        src={images[0]}
-        alt={`${hostel.name} interior room preview`}
-        fill
-        sizes="(min-width: 1024px) 1152px, 100vw"
-        className="object-cover"
-        priority
-      />
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-black/55 to-transparent" />
+    <>
+      <section className="relative h-[25.5rem] overflow-hidden bg-secondary sm:h-[32rem] lg:mx-auto lg:mt-5 lg:h-[34rem] lg:max-w-[72rem] lg:rounded-lg">
+        <button type="button" onClick={() => setViewerOpen(true)} className="absolute inset-0" aria-label={`Open full-screen photos for ${hostel.name}`}>
+          <Image
+            src={activeImage}
+            alt={`${hostel.name} interior photo ${activeIndex + 1}`}
+            fill
+            sizes="(min-width: 1024px) 1152px, 100vw"
+            className="object-cover"
+            priority
+          />
+        </button>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-black/55 to-transparent" />
 
-      <div className="absolute left-3 top-3 z-10 lg:left-5 lg:top-5">
-        <Link
-          href="/search/results?q=UCC"
-          className="grid size-8 place-items-center rounded-full bg-white text-[#111827] shadow-sm lg:size-9"
-          aria-label="Back to search results"
-        >
-          <ArrowLeft className="size-4" aria-hidden="true" />
-        </Link>
-      </div>
-
-      <div className="absolute right-3 top-3 z-10 flex gap-2 lg:right-5 lg:top-5">
-        <HeroIconButton label="Search" icon={Search} href="/search" />
-        <HeroIconButton label={`Share ${hostel.name}`} icon={Share2} onClick={() => shareHostel(hostel)} />
-        <ListingSaveButton
-          slug={hostel.slug}
-          name={hostel.name}
-          className="static grid size-8 place-items-center rounded-full bg-white shadow-sm lg:size-9"
-        />
-      </div>
-
-      <div className="absolute inset-x-3 bottom-[4.9rem] z-10 flex items-center justify-between lg:bottom-5">
-        <span className="inline-flex h-8 items-center gap-1.5 rounded-full bg-white px-2.5 text-xs font-bold shadow-sm">
-          <Star className="size-4 fill-[#16A36A] text-[#16A36A]" aria-hidden="true" />
-          {hostel.rating} ({hostel.reviews})
-        </span>
-        <div className="flex items-center gap-1.5" aria-hidden="true">
-          <span className="h-1.5 w-7 rounded-full bg-white" />
-          <span className="size-1.5 rounded-full bg-white/75" />
-          <span className="size-1.5 rounded-full bg-white/75" />
-          <span className="size-1.5 rounded-full bg-white/75" />
-          <span className="size-1.5 rounded-full bg-white/75" />
+        <div className="absolute left-3 top-3 z-10 lg:left-5 lg:top-5">
+          <Link href="/search/results?q=UCC" className="grid size-8 place-items-center rounded-full bg-white text-[#111827] lg:size-9" aria-label="Back to search results"><ArrowLeft className="size-4" aria-hidden="true" /></Link>
         </div>
-        <span className="rounded-full bg-black/70 px-2.5 py-1.5 text-xs font-bold text-white">1/28</span>
-      </div>
-    </section>
+
+        <div className="absolute right-3 top-3 z-10 flex gap-2 lg:right-5 lg:top-5">
+          <HeroIconButton label="Search" icon={Search} href="/search" />
+          <HeroIconButton label={`Share ${hostel.name}`} icon={Share2} onClick={() => shareHostel(hostel)} />
+          <ListingSaveButton slug={hostel.slug} name={hostel.name} className="static grid size-8 place-items-center rounded-full border border-border bg-white lg:size-9" />
+        </div>
+
+        <div className="absolute inset-x-3 bottom-[5.35rem] z-10 flex items-center justify-between">
+          <span className="inline-flex h-8 items-center gap-1.5 rounded-full bg-white px-2.5 text-xs font-medium"><Star className="size-4 fill-[#16A36A] text-[#16A36A]" aria-hidden="true" />{hostel.rating} ({hostel.reviews})</span>
+          <span className="rounded-full bg-black/70 px-2.5 py-1.5 text-xs font-medium text-white">{activeIndex + 1}/{images.length}</span>
+        </div>
+
+        <div className="absolute inset-x-0 bottom-0 z-10 border-t border-white/50 bg-white/95 px-3 py-2">
+          <div className="no-scrollbar flex gap-2 overflow-x-auto">
+            {images.map((image, index) => (
+              <button key={`${image}-${index}`} type="button" onClick={() => setActiveIndex(index)} className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-md border-2 ${activeIndex === index ? "border-primary" : "border-transparent"}`} aria-label={`Show photo ${index + 1}`} aria-pressed={activeIndex === index}>
+                <Image src={image} alt="" fill sizes="80px" className="object-cover" />
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {viewerOpen ? (
+        <div className="fixed inset-0 z-[80] bg-black" role="dialog" aria-modal="true" aria-label={`${hostel.name} photo gallery`}>
+          <button type="button" onClick={() => setViewerOpen(false)} className="absolute right-4 top-4 z-20 grid size-10 place-items-center rounded-full border border-white/30 bg-black/40 text-white" aria-label="Close photo gallery"><X className="size-5" /></button>
+          <div className="absolute inset-0 bottom-24"><Image src={activeImage} alt={`${hostel.name} photo ${activeIndex + 1} of ${images.length}`} fill sizes="100vw" className="object-contain" priority /></div>
+          {images.length > 1 ? <><button type="button" onClick={showPrevious} className="absolute left-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-white text-[#111827]" aria-label="Previous photo"><ChevronLeft className="size-5" /></button><button type="button" onClick={showNext} className="absolute right-3 top-1/2 z-20 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-white text-[#111827]" aria-label="Next photo"><ChevronRight className="size-5" /></button></> : null}
+          <div className="absolute inset-x-0 bottom-0 border-t border-white/15 bg-black px-4 py-3"><div className="no-scrollbar mx-auto flex max-w-3xl gap-2 overflow-x-auto">{images.map((image, index) => <button key={`viewer-${image}-${index}`} type="button" onClick={() => setActiveIndex(index)} className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-md border-2 ${activeIndex === index ? "border-primary" : "border-transparent"}`} aria-label={`Open photo ${index + 1}`} aria-pressed={activeIndex === index}><Image src={image} alt="" fill sizes="96px" className="object-cover" /></button>)}</div></div>
+        </div>
+      ) : null}
+    </>
   );
 }
 

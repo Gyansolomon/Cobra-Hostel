@@ -57,7 +57,6 @@ export default function LoginPage() {
         </div>
         {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p> : null}
         <button className={primaryButtonClassName} type="submit">Sign in</button>
-        <p className="text-center text-xs leading-5 text-muted-foreground">Demo mode: use any valid email and a password of 6+ characters. Passwords are never stored.</p>
       </form>
     </AuthShell>
   );

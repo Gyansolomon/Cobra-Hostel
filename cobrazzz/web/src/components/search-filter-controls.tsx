@@ -64,8 +64,8 @@ export function SearchFilterControls({ className, compact = false }: TriggerProp
       <Sheet>
         <SheetTriggerButton className={cn("lg:hidden", className)} compact={compact} />
         <SheetContent
-          side="bottom"
-          className="max-h-[88dvh] rounded-t-[1.1rem] pb-[env(safe-area-inset-bottom)]"
+          side="right"
+          className="!w-[90vw] max-w-sm gap-0 pb-[env(safe-area-inset-bottom)]"
         >
           <SheetHeader className="border-b border-border pb-3">
             <SheetTitle>Filters</SheetTitle>
@@ -135,7 +135,8 @@ export function SortControl() {
         }
       >
         <SlidersHorizontal className="size-3.5 sm:size-4" aria-hidden="true" />
-        Sort: {selectedSort}
+        <span className="sm:hidden">Sort</span>
+        <span className="hidden sm:inline">Sort: {selectedSort}</span>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>

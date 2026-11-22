@@ -35,7 +35,7 @@ const discoveryHrefs: Record<string, string> = {
 
 export default function SearchPage() {
   return (
-    <main className="min-h-dvh bg-[#F7F7F7] pb-20 text-foreground lg:pb-0">
+    <main className="min-h-dvh bg-white pb-20 text-foreground lg:pb-0">
       <header className="sticky top-0 z-20 border-b border-border bg-card">
         <form
           action="/search/results"
@@ -85,8 +85,8 @@ export default function SearchPage() {
         </nav>
       </header>
 
-      <div className="mx-auto grid max-w-[72rem] gap-4 px-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:px-8 lg:py-8">
-        <section className="border-b border-border bg-card px-4 py-5 lg:rounded-2xl lg:border lg:p-6 lg:shadow-sm">
+      <div className="mx-auto grid max-w-[72rem] gap-0 px-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:px-8 lg:py-10">
+        <section className="border-b border-border bg-card px-4 py-6 lg:border-b-0 lg:border-r lg:px-0 lg:py-0 lg:pr-8">
           <div className="flex items-center gap-2.5 text-muted-foreground">
             <Timer1 size={21} color="currentColor" variant="Linear" />
             <h2 className="text-base font-semibold text-foreground lg:text-lg">Recently searched</h2>
@@ -105,7 +105,7 @@ export default function SearchPage() {
           </div>
         </section>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid lg:grid-cols-2 lg:pl-8">
           <SearchChipSection
             icon={Location}
             title="Top cities"
@@ -120,7 +120,7 @@ export default function SearchPage() {
       </div>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-sm lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 lg:hidden"
         aria-label="Mobile primary"
       >
         <ul className="mx-auto grid w-full max-w-48 grid-cols-3 text-xs font-semibold text-muted-foreground">
@@ -161,7 +161,7 @@ function SearchChipSection({
   items: string[];
 }) {
   return (
-    <section className="border-b border-border bg-card px-4 py-5 lg:rounded-2xl lg:border lg:p-6 lg:shadow-sm">
+    <section className="border-b border-border bg-card px-4 py-6 lg:border-b-0 lg:border-r lg:px-6 lg:py-0 lg:last:border-r-0 lg:last:pr-0">
       <div className="flex items-center gap-2.5">
         <Icon size={20} color="currentColor" variant="Linear" />
         <h2 className="text-base font-semibold lg:text-lg">{title}</h2>

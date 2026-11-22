@@ -19,39 +19,47 @@ type HubProps = {
 };
 
 export function LocationHub({ kind, title, eyebrow, summary, image, areas, transport, priceGuide, hostels, searchTerm }: HubProps) {
+  const lowestPrice = hostels.length ? Math.min(...hostels.map((hostel) => Number(hostel.price.replace(/\D/g, "")))) : null;
+
   return (
-    <main className="min-h-dvh bg-[#F7F7F7] text-[#111827]">
+    <main className="min-h-dvh bg-white text-[#111827]">
       <header className="border-b border-border bg-white">
         <div className="mx-auto flex h-16 max-w-[80rem] items-center gap-3 px-4 lg:px-8">
           <Link href="/" className="grid size-9 place-items-center rounded-full border border-border" aria-label="Back home"><ArrowLeft className="size-4" /></Link>
           <Link href="/" className="font-semibold">cobra</Link>
-          <Link href={`/search/results?q=${encodeURIComponent(searchTerm)}`} className="ml-auto inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-white"><Search className="size-4" /> Find hostels</Link>
+          <Link href={`/search/results?q=${encodeURIComponent(searchTerm)}`} className="ml-auto inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-white"><Search className="size-4" /> Find hostels</Link>
         </div>
       </header>
 
       <section className="mx-auto max-w-[80rem] px-4 py-5 lg:px-8 lg:py-8">
-        <div className="relative min-h-[22rem] overflow-hidden rounded-2xl bg-[#111827] lg:min-h-[28rem]">
-          <Image src={image} alt={`${title} student accommodation area`} fill sizes="(min-width: 1024px) 1280px, 100vw" className="object-cover opacity-60" priority />
-          <div className="absolute inset-0 bg-black/35" />
+        <div className="relative min-h-[22rem] overflow-hidden rounded-lg bg-[#111827] lg:min-h-[28rem]">
+          <Image src={image} alt={`${title} student accommodation area`} fill sizes="(min-width: 1024px) 1280px, 100vw" className="object-cover" priority />
+          <div className="absolute inset-0 bg-black/45" />
           <div className="absolute inset-x-0 bottom-0 max-w-3xl p-6 text-white sm:p-9 lg:p-12">
             <p className="text-sm font-medium text-white/75">{eyebrow}</p>
-            <h1 className="mt-2 text-balance text-3xl font-semibold sm:text-4xl lg:text-5xl">Student accommodation near {title}</h1>
+            <h1 className="mt-2 max-w-4xl text-balance text-3xl font-semibold sm:text-4xl">Student accommodation near {title}</h1>
             <p className="mt-4 max-w-2xl text-pretty text-sm leading-6 text-white/85 sm:text-base">{summary}</p>
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
-          <section className="rounded-2xl border border-border bg-white p-5 shadow-sm sm:p-7">
+        <dl className="grid grid-cols-3 border-b border-border">
+          <div className="py-5 pr-3"><dt className="text-xs text-muted-foreground">{kind === "university" ? "Campus" : "Location"}</dt><dd className="mt-1 text-sm font-medium">{eyebrow.split("·").at(-1)?.trim()}</dd></div>
+          <div className="border-l border-border px-3 py-5"><dt className="text-xs text-muted-foreground">Listings</dt><dd className="mt-1 text-sm font-medium">{hostels.length || "Coming soon"}</dd></div>
+          <div className="border-l border-border py-5 pl-3"><dt className="text-xs text-muted-foreground">Starting from</dt><dd className="mt-1 text-sm font-medium">{lowestPrice ? `GHS ${lowestPrice.toLocaleString()}` : "Compare nearby"}</dd></div>
+        </dl>
+
+        <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
+          <section>
             <div className="flex items-center gap-2"><MapPin className="size-5 text-primary" /><h2 className="text-xl font-semibold">Popular student areas</h2></div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <div className="mt-5 border-t border-border sm:grid sm:grid-cols-2">
               {areas.map((area) => (
-                <Link key={area} href={`/search/results?q=${encodeURIComponent(`${searchTerm} ${area}`)}`} className="flex min-h-14 items-center justify-between rounded-xl border border-border px-4 text-sm font-medium hover:border-primary/50">
+                <Link key={area} href={`/search/results?q=${encodeURIComponent(`${searchTerm} ${area}`)}`} className="flex min-h-14 items-center justify-between border-b border-border py-3 text-sm font-medium sm:odd:pr-5 sm:even:pl-5">
                   {area}<ArrowRight className="size-4 text-muted-foreground" />
                 </Link>
               ))}
             </div>
           </section>
-          <aside className="space-y-3">
+          <aside className="border-t border-border lg:border-l lg:border-t-0 lg:pl-6">
             <InfoCard icon={Bus} title="Getting around" copy={transport} />
             <InfoCard icon={kind === "university" ? GraduationCap : Home} title="Price guide" copy={priceGuide} />
           </aside>
@@ -71,7 +79,7 @@ export function LocationHub({ kind, title, eyebrow, summary, image, areas, trans
               ))}
             </div>
           ) : (
-            <div className="mt-5 rounded-2xl border border-dashed border-border bg-white p-8 text-center"><p className="font-semibold">More listings are being reviewed.</p><p className="mt-2 text-sm text-muted-foreground">Browse nearby cities while new hostels are added.</p></div>
+            <div className="mt-5 rounded-lg border border-dashed border-border p-8 text-center"><p className="font-semibold">More listings are being reviewed.</p><p className="mt-2 text-sm text-muted-foreground">Browse nearby cities while new hostels are added.</p></div>
           )}
         </section>
       </section>
@@ -80,5 +88,5 @@ export function LocationHub({ kind, title, eyebrow, summary, image, areas, trans
 }
 
 function InfoCard({ icon: Icon, title, copy }: { icon: typeof Bus; title: string; copy: string }) {
-  return <div className="rounded-2xl border border-border bg-white p-5 shadow-sm"><span className="grid size-9 place-items-center rounded-xl bg-[#FFF0F5] text-primary"><Icon className="size-4" /></span><h2 className="mt-4 font-semibold">{title}</h2><p className="mt-2 text-pretty text-sm leading-6 text-muted-foreground">{copy}</p></div>;
+  return <div className="border-b border-border py-6 first:pt-0"><Icon className="size-5 text-primary" /><h2 className="mt-3 font-medium">{title}</h2><p className="mt-2 text-pretty text-sm leading-6 text-muted-foreground">{copy}</p></div>;
 }

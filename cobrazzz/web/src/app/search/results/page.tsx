@@ -235,7 +235,7 @@ function SearchHeader({ query }: { query: string }) {
       <div className="flex h-14 items-center gap-2.5 px-4 lg:hidden">
         <Link
           href="/"
-          className="shrink-0 text-[1.35rem] font-extrabold leading-none tracking-tight text-[#101522]"
+          className="shrink-0 text-[1.35rem] font-semibold leading-none text-[#101522]"
           aria-label="Cobra home"
         >
           cobra
@@ -270,7 +270,7 @@ function SearchHeader({ query }: { query: string }) {
       <div className="hidden h-[6.5rem] grid-cols-[1fr_auto_1fr] items-center px-10 lg:grid 2xl:px-14">
         <Link
           href="/"
-          className="text-3xl font-extrabold leading-none tracking-tight text-[#101522]"
+          className="text-3xl font-semibold leading-none text-[#101522]"
           aria-label="Cobra home"
         >
           cobra
@@ -278,7 +278,7 @@ function SearchHeader({ query }: { query: string }) {
 
         <form
           action="/search/results"
-          className="grid h-14 min-w-[35rem] grid-cols-[1fr_auto_auto_auto_auto_auto] items-center rounded-full border border-[#DDDDDD] bg-card p-1.5 shadow-[0_2px_12px_rgba(15,23,42,0.10)]"
+          className="grid h-14 min-w-[35rem] grid-cols-[1fr_auto_auto_auto_auto_auto] items-center rounded-full border border-[#DDDDDD] bg-card p-1.5"
         >
           <label className="flex min-w-0 items-center gap-3 rounded-full px-5">
             <SearchNormal1 size={18} color="currentColor" variant="Linear" />
@@ -332,14 +332,14 @@ function SearchHeader({ query }: { query: string }) {
       </div>
 
       <nav
-        className="mx-auto flex h-11 w-full max-w-[96rem] items-center gap-2 overflow-x-auto border-t border-[#E5E7EB] px-4 shadow-[0_4px_10px_rgba(15,23,42,0.10)] sm:px-6 lg:h-16 lg:justify-center lg:gap-3 lg:border-t lg:px-10 lg:shadow-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="mx-auto grid h-12 w-full max-w-[96rem] grid-cols-3 items-center gap-2 border-t border-[#E5E7EB] px-4 [&>button]:w-full sm:px-6 lg:flex lg:h-16 lg:justify-center lg:gap-3 lg:border-t lg:px-10 lg:[&>button]:w-auto"
         aria-label="Search filters"
       >
         <SortControl />
         <SearchFilterControls />
-        <Link href="/search" className="inline-flex h-[30px] shrink-0 items-center rounded-full border border-[#D9D9DE] bg-card px-3 text-xs font-semibold lg:h-9 lg:px-4">Change search</Link>
-        <Link href={`/map?q=${encodeURIComponent(query)}`} className="inline-flex h-[30px] shrink-0 items-center rounded-full border border-[#D9D9DE] bg-card px-3 text-xs font-semibold lg:h-9 lg:px-4">Map</Link>
-        <Link href="/safety" className="inline-flex h-[30px] shrink-0 items-center rounded-full border border-[#D9D9DE] bg-card px-3 text-xs font-semibold lg:h-9 lg:px-4">Verification</Link>
+        <Link href="/search" className="hidden h-[30px] shrink-0 items-center rounded-full border border-[#D9D9DE] bg-card px-3 text-xs font-semibold lg:inline-flex lg:h-9 lg:px-4">Change search</Link>
+        <Link href={`/map?q=${encodeURIComponent(query)}`} className="inline-flex h-8 shrink-0 items-center justify-center rounded-full border border-[#D9D9DE] bg-card px-3 text-xs font-semibold lg:h-9 lg:px-4">Map</Link>
+        <Link href="/safety" className="hidden h-[30px] shrink-0 items-center rounded-full border border-[#D9D9DE] bg-card px-3 text-xs font-semibold lg:inline-flex lg:h-9 lg:px-4">Verification</Link>
       </nav>
     </header>
   );
@@ -355,11 +355,11 @@ function HostelListingCard({
   const detailsHref = getHostelHref(hostel.name);
 
   return (
-    <article className="group overflow-hidden rounded-[0.95rem] border border-[#E5E7EB] bg-card shadow-sm sm:grid sm:grid-cols-[15rem_minmax(0,1fr)] sm:gap-4 sm:overflow-visible sm:rounded-none sm:border-x-0 sm:border-b sm:border-t-0 sm:pb-5 sm:shadow-none lg:grid-cols-[16rem_minmax(0,1fr)]">
+    <article className="group overflow-hidden rounded-lg border border-[#E5E7EB] bg-card sm:grid sm:grid-cols-[15rem_minmax(0,1fr)] sm:gap-4 sm:overflow-visible sm:rounded-none sm:border-x-0 sm:border-b sm:border-t-0 sm:pb-5 lg:grid-cols-[16rem_minmax(0,1fr)]">
       <div className="relative">
         <Link
           href={detailsHref}
-          className="relative block aspect-[1.55/1] overflow-hidden rounded-t-[0.95rem] bg-secondary sm:aspect-[1.08/1] sm:rounded-[1.1rem]"
+          className="relative block aspect-[1.55/1] overflow-hidden rounded-t-lg bg-secondary sm:aspect-[1.08/1] sm:rounded-lg"
           aria-label={`View details for ${hostel.name}`}
         >
           <Image
@@ -377,7 +377,7 @@ function HostelListingCard({
             <span className="size-1.5 rounded-full bg-white/80" />
             <span className="size-1.5 rounded-full bg-white/80" />
           </div>
-          <span className="absolute left-3 top-3 rounded-full bg-[#FFF0F5]/95 px-3 py-1.5 text-[11px] font-medium text-primary shadow-sm sm:px-3 sm:py-1 sm:text-[11px]">
+          <span className="absolute left-3 top-3 rounded-full bg-[#FFF0F5]/95 px-3 py-1.5 text-[11px] font-medium text-primary sm:px-3 sm:py-1 sm:text-[11px]">
             {hostel.offer}
           </span>
         </Link>
@@ -388,7 +388,7 @@ function HostelListingCard({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <Link href={detailsHref}>
-              <h2 className="line-clamp-1 text-[1.05rem] font-extrabold leading-6 text-[#22242A] sm:text-lg sm:font-semibold sm:leading-6">
+              <h2 className="line-clamp-1 text-[1.05rem] font-semibold leading-6 text-[#22242A] sm:text-lg sm:leading-6">
                 {hostel.name}
               </h2>
             </Link>
@@ -396,7 +396,7 @@ function HostelListingCard({
               {hostel.address}
             </p>
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-[#1F2329] sm:text-sm">
+          <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-[#1F2329] sm:text-sm">
             <PremiumAssetIcon src={premiumAssets.rating} className="size-3.5" sizes="14px" />
             {hostel.rating} ({hostel.reviews})
           </span>
@@ -414,7 +414,7 @@ function HostelListingCard({
             <span>10m</span>
             <span className="text-[#6B6F76]">)</span>
           </p>
-          <p className="flex items-center gap-2 font-semibold text-[#39414D] sm:hidden">
+          <p className="flex items-center gap-2 font-medium text-[#39414D] sm:hidden">
             <GraduationCap className="size-3.5 shrink-0" aria-hidden="true" />
             <span>0.4 mi from Sasakawa lecture hall</span>
           </p>
@@ -425,7 +425,7 @@ function HostelListingCard({
         <div className="max-h-[3.5rem] overflow-x-auto overflow-y-hidden overscroll-x-contain pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex w-max flex-col gap-1.5">
             <div className="flex gap-1.5">
-              <span className="inline-flex h-6 w-fit shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-[#BBD7FF] bg-[#F0F7FF] px-2.5 text-[11px] font-bold text-[#2563EB] sm:h-7 sm:text-xs">
+              <span className="inline-flex h-6 w-fit shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-[#BBD7FF] bg-[#F0F7FF] px-2.5 text-[11px] font-semibold text-[#2563EB] sm:h-7 sm:text-xs">
                 <Percent className="size-3.5" aria-hidden="true" />
                 10 Offers
               </span>
@@ -434,7 +434,7 @@ function HostelListingCard({
               ))}
             </div>
             <div className="flex gap-1.5">
-              <span className="inline-flex h-6 w-fit shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-[#B9DEC6] bg-[#EAF5EE] px-2.5 text-[11px] font-bold text-[#13795B] sm:h-7 sm:text-xs">
+              <span className="inline-flex h-6 w-fit shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-[#B9DEC6] bg-[#EAF5EE] px-2.5 text-[11px] font-semibold text-[#13795B] sm:h-7 sm:text-xs">
                 <ShieldCheck className="size-3.5" aria-hidden="true" />
                 Instant Booking
               </span>
@@ -448,13 +448,13 @@ function HostelListingCard({
         <div className="mt-4 flex items-end justify-between gap-4 sm:mt-4">
           <div>
             <p className="text-[11px] leading-4 text-[#1F2329]">From</p>
-            <p className="text-[1.05rem] font-extrabold leading-6 text-[#1F2329] sm:text-[1.35rem]">
+            <p className="text-[1.05rem] font-semibold leading-6 text-[#1F2329] sm:text-[1.35rem]">
               {hostel.yearlyPrice}
             </p>
           </div>
           <Link
             href={detailsHref}
-            className="inline-flex h-9 min-w-[8.75rem] shrink-0 items-center justify-center rounded-xl bg-primary px-3 text-[12px] font-bold leading-none text-primary-foreground shadow-sm active:scale-[0.98] sm:h-11 sm:min-w-[10rem] sm:px-5 sm:text-sm"
+            className="inline-flex h-9 min-w-[8.75rem] shrink-0 items-center justify-center rounded-lg bg-primary px-3 text-[12px] font-semibold leading-none text-primary-foreground active:scale-[0.98] sm:h-11 sm:min-w-[10rem] sm:px-5 sm:text-sm"
           >
             See Availability
           </Link>
@@ -553,7 +553,7 @@ function TrustRail() {
 function MobilePrimaryNav() {
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-3 pb-[calc(env(safe-area-inset-bottom)+0.4rem)] pt-1.5 shadow-sm lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card px-3 pb-[calc(env(safe-area-inset-bottom)+0.4rem)] pt-1.5 lg:hidden"
       aria-label="Mobile primary"
     >
       <ul className="mx-auto grid w-full max-w-44 grid-cols-3 text-[11px] font-semibold text-muted-foreground">

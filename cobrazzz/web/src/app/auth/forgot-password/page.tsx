@@ -16,12 +16,12 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <AuthShell title="Reset your password" description="Enter your account email and we’ll prepare the password reset flow." footer={<Link href="/auth/login" className="font-semibold text-primary">Back to sign in</Link>}>
+    <AuthShell title="Reset your password" description="Enter the email address connected to your Cobra account." footer={<Link href="/auth/login" className="font-semibold text-primary">Back to sign in</Link>}>
       {sent ? (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-center">
+        <div className="border-y border-emerald-200 bg-emerald-50/60 py-6 text-center">
           <CheckCircle2 className="mx-auto size-9 text-emerald-600" aria-hidden="true" />
           <h2 className="mt-3 text-lg font-semibold">Check your email</h2>
-          <p className="mt-2 text-sm leading-6 text-emerald-800">A production account would receive a secure reset link at {email}. Email delivery will be connected with the backend.</p>
+          <p className="mt-2 text-sm leading-6 text-emerald-800">If an account exists for {email}, a secure reset link will arrive shortly.</p>
         </div>
       ) : (
         <form onSubmit={submit} className="space-y-4">

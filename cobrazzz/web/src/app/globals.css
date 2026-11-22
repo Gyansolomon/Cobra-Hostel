@@ -1,6 +1,65 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "leaflet/dist/leaflet.css";
+
+.cobra-map-price-icon {
+  background: transparent;
+  border: 0;
+}
+
+.cobra-map-price-pill {
+  position: relative;
+  display: inline-flex;
+  min-width: 4.5rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d9d9de;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cobra-map-price-pill::after {
+  position: absolute;
+  bottom: -0.3rem;
+  left: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 1px solid #d9d9de;
+  border-bottom: 1px solid #d9d9de;
+  background: inherit;
+  content: "";
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.cobra-map-price-pill.is-active {
+  border-color: #ff385c;
+  background: #ff385c;
+  color: #ffffff;
+}
+
+.leaflet-container {
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+.leaflet-top.leaflet-right {
+  top: 4.25rem;
+  right: 0.25rem;
+}
+
+.leaflet-bottom {
+  bottom: 7rem;
+}
+
+.leaflet-control-zoom {
+  border: 1px solid #d9d9de !important;
+  box-shadow: none !important;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -161,55 +220,6 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
-}
-
-.cobra-map-pin-dot {
-  display: grid;
-  width: 1.75rem;
-  height: 1.75rem;
-  place-items: center;
-  border: 3px solid #ffffff;
-  border-radius: 9999px;
-  background: var(--primary);
-  box-shadow: 0 6px 18px rgb(34 34 34 / 0.18);
-}
-
-.cobra-map-pin-dot::after {
-  width: 0.42rem;
-  height: 0.42rem;
-  border-radius: 9999px;
-  background: #ffffff;
-  content: "";
-}
-
-.cobra-map-pin-label {
-  position: absolute;
-  top: 1.85rem;
-  display: inline-flex;
-  max-width: 6.2rem;
-  align-items: center;
-  gap: 0.25rem;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 9999px;
-  background: rgb(255 255 255 / 0.96);
-  padding: 0.1rem 0.45rem;
-  color: var(--foreground);
-  font-size: 0.625rem;
-  font-weight: 650;
-  line-height: 1rem;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgb(34 34 34 / 0.08);
-}
-
-.cobra-map-pin-label span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cobra-map-pin-label strong {
-  color: var(--primary);
-  font-variant-numeric: tabular-nums;
 }
 
 .hostel-details-page .font-extrabold {
